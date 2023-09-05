@@ -10,7 +10,12 @@ module.exports = {
     "./modules/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "dark-bg": "#2E2E30",
+        "task-dark-bg": "#2A2B2D",
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],

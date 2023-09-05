@@ -10,3 +10,5 @@ export * from "./next";
 export * from "./google";
 export * from "./eyes";
 export * from "./close";
+export * from "./plus";
+export * from "./menu";
