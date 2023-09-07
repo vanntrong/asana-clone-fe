@@ -1,20 +1,23 @@
+import { EyeFilledIcon, SortIcon } from "@/components/icons";
 import { Button } from "@nextui-org/button";
 import { Spacer } from "@nextui-org/spacer";
-import React from "react";
+import FilterTask from "../filterTask";
 
 const ProjectSort = () => {
   return (
     <div className="px-6">
       <div className="flex">
-        <Button size="sm" variant="light">
-          Filter
-        </Button>
+        <FilterTask />
         <Spacer x={2} />
-        <Button size="sm" variant="light">
+        <Button size="sm" variant="light" startContent={<SortIcon size={14} />}>
           Sort
         </Button>
         <Spacer x={2} />
-        <Button size="sm" variant="light">
+        <Button
+          size="sm"
+          variant="light"
+          startContent={<EyeFilledIcon size={14} />}
+        >
           Hide
         </Button>
       </div>
