@@ -2,14 +2,14 @@ import { LikeIcon } from "@/components/icons/like";
 import { Button } from "@nextui-org/button";
 import React from "react";
 
-export interface FilterProps {
+export interface FilterItemProps {
   className?: string;
   title: string;
   icon: React.ReactNode;
   onClick?: () => void;
 }
 
-const Filter = ({ title, icon, ...props }: FilterProps) => {
+const FilterItem = ({ title, icon, ...props }: FilterItemProps) => {
   return (
     <Button
       startContent={icon}
@@ -24,4 +24,4 @@ const Filter = ({ title, icon, ...props }: FilterProps) => {
   );
 };
 
-export default Filter;
+export default FilterItem;

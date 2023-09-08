@@ -1,8 +1,8 @@
 import Sidebar from "@/components/sidebar";
 import ProjectHeader from "@/modules/home/components/projectHeader";
-import ProjectSort from "../../components/projectSort";
+import ProjectSort from "@/modules/home/components/projectSort";
 import { Divider } from "@nextui-org/divider";
-import Board from "../../components/board";
+import Board from "@/modules/home/components/board";
 
 const HomePage = () => {
   return (

@@ -2,6 +2,7 @@ import { EyeFilledIcon, SortIcon } from "@/components/icons";
 import { Button } from "@nextui-org/button";
 import { Spacer } from "@nextui-org/spacer";
 import FilterTask from "../filterTask";
+import SortTask from "../sortTask";
 
 const ProjectSort = () => {
   return (
@@ -9,9 +10,7 @@ const ProjectSort = () => {
       <div className="flex">
         <FilterTask />
         <Spacer x={2} />
-        <Button size="sm" variant="light" startContent={<SortIcon size={14} />}>
-          Sort
-        </Button>
+        <SortTask />
         <Spacer x={2} />
         <Button
           size="sm"

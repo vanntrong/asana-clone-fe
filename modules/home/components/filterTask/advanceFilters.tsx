@@ -1,10 +1,5 @@
-import {
-  CalendarIcon,
-  CheckIcon,
-  CloseIcon,
-  PersonIcon,
-  PlusIcon,
-} from "@/components/icons";
+import { PlusIcon } from "@/components/icons";
+import { advanceFilters } from "@/modules/home/configs/homeConfig";
 import { Button } from "@nextui-org/button";
 import {
   Dropdown,
@@ -14,7 +9,6 @@ import {
 } from "@nextui-org/dropdown";
 import React, { useMemo } from "react";
 import AdvanceFilterItem from "./advanceFilterItem";
-import { advanceFilters } from "@/modules/home/configs/homeConfig";
 
 const AdvanceFilters = () => {
   const [advanceFilterSelected, setAdvanceFilterSelected] = React.useState<
@@ -48,6 +42,11 @@ const AdvanceFilters = () => {
                 onChangeFilterType={(value) =>
                   setAdvanceFilterSelected((prev) =>
                     prev.map((item) => (item === filter ? value : item))
+                  )
+                }
+                onRemoveFilter={(value) =>
+                  setAdvanceFilterSelected((prev) =>
+                    prev.filter((item) => item !== value)
                   )
                 }
               />
