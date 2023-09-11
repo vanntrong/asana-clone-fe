@@ -38,7 +38,7 @@ const AdvanceFilters = () => {
                 value={filterItem.value}
                 title={filterItem.title}
                 icon={filterItem.icon}
-                filterOptions={availableAdvanceFilters}
+                filterOptions={advanceFilters}
                 onChangeFilterType={(value) =>
                   setAdvanceFilterSelected((prev) =>
                     prev.map((item) => (item === filter ? value : item))

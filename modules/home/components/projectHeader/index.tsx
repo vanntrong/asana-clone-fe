@@ -1,3 +1,4 @@
+import InlineInput from "@/components/inlineInput";
 import { Avatar } from "@nextui-org/avatar";
 import React from "react";
 

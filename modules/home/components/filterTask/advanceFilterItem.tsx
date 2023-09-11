@@ -12,6 +12,7 @@ import {
   AdvanceFilterType,
   AdvanceFilter,
 } from "@/modules/home/types/homeType";
+import { Select, SelectItem } from "@nextui-org/react";
 
 interface AdvanceFilterItemProps {
   title: AdvanceFilterType;
@@ -40,29 +41,25 @@ const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4 basis-1/2">
-        <Dropdown radius="sm">
-          <DropdownTrigger>
-            <Button
-              size="sm"
-              variant="ghost"
-              startContent={icon}
-              className="flex-1"
+        <Select
+          size={"sm"}
+          labelPlacement="outside"
+          className="flex-1"
+          startContent={icon}
+          selectedKeys={new Set([value])}
+          disabledKeys={new Set([value])}
+        >
+          {filterOptions.map((filter) => (
+            <SelectItem
+              key={filter.title}
+              value={filter.value}
+              startContent={filter.icon}
+              onClick={() => onChangeFilterType(filter.value)}
             >
-              {title}
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu>
-            {filterOptions.map((filter) => (
-              <DropdownItem
-                key={filter.title}
-                startContent={filter.icon}
-                onClick={() => onChangeFilterType(filter.value)}
-              >
-                {filter.title}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
+              {filter.title}
+            </SelectItem>
+          ))}
+        </Select>
 
         <span>is</span>
       </div>
@@ -95,18 +92,17 @@ const AdvanceFilterCompletionStatus = () => {
   ];
 
   return (
-    <Dropdown radius="sm" placement="bottom-start">
-      <DropdownTrigger>
-        <Button className="text-xs w-full" size="sm" variant="ghost">
-          {options[0].title}
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu>
-        {options.map((filter) => (
-          <DropdownItem key={filter.title}>{filter.title}</DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
+    <Select
+      size={"sm"}
+      labelPlacement="outside"
+      defaultSelectedKeys={new Set([options[0].title])}
+    >
+      {options.map((value) => (
+        <SelectItem key={value.title} value={value.title}>
+          {value.title}
+        </SelectItem>
+      ))}
+    </Select>
   );
 };
 
@@ -143,17 +139,16 @@ const AdvanceFilterDate = () => {
     },
   ];
   return (
-    <Dropdown radius="sm" placement="bottom-start">
-      <DropdownTrigger>
-        <Button className="text-xs w-full" size="sm" variant="ghost">
-          {options[0].title}
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu>
-        {options.map((filter) => (
-          <DropdownItem key={filter.title}>{filter.title}</DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
+    <Select
+      size={"sm"}
+      labelPlacement="outside"
+      defaultSelectedKeys={new Set([options[0].title])}
+    >
+      {options.map((value) => (
+        <SelectItem key={value.title} value={value.title}>
+          {value.title}
+        </SelectItem>
+      ))}
+    </Select>
   );
 };

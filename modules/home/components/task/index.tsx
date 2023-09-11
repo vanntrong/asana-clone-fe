@@ -5,13 +5,23 @@ import { Button } from "@nextui-org/button";
 import { LikeIcon } from "@/components/icons/like";
 import { CommentIcon } from "@/components/icons";
 import { Tooltip } from "@nextui-org/tooltip";
+import InlineInput from "@/components/inlineInput";
 
 const Task = () => {
   return (
     <div className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group">
-      <h2 className="text-sm font-medium dark:text-gray-200">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-      </h2>
+      <InlineInput
+        Title={
+          <h2 className="text-sm font-medium dark:text-gray-200">
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+          </h2>
+        }
+        size="sm"
+        className="outline-none focus:outline-none p-0"
+        value={"Lorem ipsum dolor sit amet consectetur, adipisicing elit."}
+        Variant="textarea"
+        minRows={1}
+      />
 
       <div className="my-3">
         <Chip color="primary" radius="full" size="sm" className="text-xs">

@@ -11,3 +11,12 @@ export type AdvanceFilter = {
   value: AdvanceFilterType;
   icon: React.ReactNode;
 };
+
+export enum SortType {
+  StartDate = "Start date",
+  DueDate = "Due date",
+  CreatedDate = "Created date",
+  LastModifiedOn = "Last modified on",
+  Likes = "Likes",
+  Alphabetical = "Alphabetical",
+}

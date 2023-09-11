@@ -1,14 +1,19 @@
 import React, { FC } from "react";
 import { SortIcon } from "@/components/icons";
 import { Button } from "@nextui-org/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  PopoverProps,
+} from "@nextui-org/popover";
 
-interface TaskFilterPopoverProps {
+interface TaskFilterPopoverProps extends PopoverProps {
   button?: React.ReactNode;
   title: string;
   count: number;
   onClear?: () => void;
-  children: React.ReactNode;
+  children: React.ReactNode[];
 }
 
 const TaskFilterPopover: FC<TaskFilterPopoverProps> = ({
@@ -17,9 +22,10 @@ const TaskFilterPopover: FC<TaskFilterPopoverProps> = ({
   count,
   onClear,
   children,
+  ...props
 }) => {
   return (
-    <Popover placement="bottom-start" radius="sm">
+    <Popover placement="bottom-start" radius="sm" {...props}>
       <PopoverTrigger>{button}</PopoverTrigger>
 
       <PopoverContent aria-label="Sort task">

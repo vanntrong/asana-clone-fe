@@ -19,3 +19,76 @@ export const SortIcon = ({ size = 24, height, width }: IconSvgProps) => {
     </svg>
   );
 };
+
+export const AscendingIcon = ({ size = 24, height, width }: IconSvgProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height={size || height}
+      width={size || width}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        d="M17 20.75a.75.75 0 00.75-.75V6.25l1.65 2.2a.75.75 0 101.2-.9l-3-4a.75.75 0 00-1.35.45v16c0 .414.336.75.75.75z"
+        clipRule="evenodd"
+      ></path>
+      <path
+        fill="currentColor"
+        d="M3.25 8c0 .414.336.75.75.75h9a.75.75 0 000-1.5H4a.75.75 0 00-.75.75z"
+      ></path>
+      <path
+        fill="currentColor"
+        d="M5.25 13c0 .414.336.75.75.75h7a.75.75 0 000-1.5H6a.75.75 0 00-.75.75z"
+        opacity="0.7"
+      ></path>
+      <path
+        fill="currentColor"
+        d="M7.25 18c0 .414.336.75.75.75h5a.75.75 0 000-1.5H8a.75.75 0 00-.75.75z"
+        opacity="0.4"
+      ></path>
+    </svg>
+  );
+};
+
+export const DescendingIcon = ({ size = 24, height, width }: IconSvgProps) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height={size || height}
+      width={size || width}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+        d="M4 16h9"
+      ></path>
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+        d="M6 11h7"
+        opacity="0.7"
+      ></path>
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+        d="M8 6h5"
+        opacity="0.3"
+      ></path>
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+        d="M17 4v16l3-4"
+      ></path>
+    </svg>
+  );
+};
