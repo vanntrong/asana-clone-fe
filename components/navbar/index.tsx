@@ -9,14 +9,14 @@ import {
   Navbar as NextUINavbar,
 } from "@nextui-org/navbar";
 
-import { Logo, MenuIcon, PlusIcon, SearchIcon } from "@/components/icons";
+import { Logo, MenuIcon, SearchIcon } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 
+import { useLayoutStore } from "@/stores/global";
 import { Button } from "@nextui-org/button";
-import MenuDropdown from "../menuDropdown";
 import Link from "next/link";
 import CreateDropdown from "../createDropdown";
-import { useLayoutStore } from "@/stores/global";
+import MenuDropdown from "../menuDropdown";
 
 interface NavbarProps {
   isAuth?: boolean;

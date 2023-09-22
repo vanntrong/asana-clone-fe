@@ -1,5 +1,6 @@
+import { getSectionsApi } from "@/apis/sections/getSections";
 import HomePage from "@/modules/home/features/home";
 
-export default function Home() {
+export default async function Home() {
   return <HomePage />;
 }

@@ -14,9 +14,13 @@ import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 // fill replace with user data
 interface LoginPasswordFormProps {
   onSubmit?: (password: string) => void;
+  isLoading?: boolean;
 }
 
-const LoginPasswordForm: FC<LoginPasswordFormProps> = ({ onSubmit }) => {
+const LoginPasswordForm: FC<LoginPasswordFormProps> = ({
+  onSubmit,
+  isLoading,
+}) => {
   const {
     register,
     formState: { errors },
@@ -27,7 +31,6 @@ const LoginPasswordForm: FC<LoginPasswordFormProps> = ({ onSubmit }) => {
   const [isVisible, setIsVisible] = React.useState(false);
 
   const onSubmitForm = (data: LoginPasswordSchema) => {
-    console.log(data);
     onSubmit?.(data.password);
   };
 
@@ -68,6 +71,7 @@ const LoginPasswordForm: FC<LoginPasswordFormProps> = ({ onSubmit }) => {
         radius="sm"
         color="primary"
         type="submit"
+        isLoading={isLoading}
       >
         <span>Login</span>
       </Button>

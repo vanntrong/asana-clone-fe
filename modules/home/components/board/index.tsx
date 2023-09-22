@@ -34,7 +34,7 @@ const Board = () => {
         </div>
       </div>
 
-      <div className="h-auto grow overflow-y-auto mt-2 flex pr-2">
+      <div className="h-auto grow overflow-y-auto mt-2 flex pr-2 custom-scrollbar">
         <div className="flex flex-col pb-5 h-max gap-4">
           <Task />
           <Task />

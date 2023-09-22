@@ -11,3 +11,7 @@ export const loginPasswordSchema = z.object({
 });
 
 export type LoginPasswordSchema = z.infer<typeof loginPasswordSchema>;
+
+export const loginSchema = loginEmailSchema.merge(loginPasswordSchema);
+
+export type LoginSchema = z.infer<typeof loginSchema>;

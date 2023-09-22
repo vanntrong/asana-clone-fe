@@ -1,11 +1,10 @@
-import "@/styles/globals.css";
-import { Metadata } from "next";
-import { siteConfig } from "@/configs/site";
 import { fontSans } from "@/configs/fonts";
-import { Providers } from "./providers";
-import { Navbar } from "@/components/navbar";
-import { Link } from "@nextui-org/link";
+import { siteConfig } from "@/configs/site";
+import "@/styles/globals.css";
 import clsx from "clsx";
+import { Metadata } from "next";
+import { Providers } from "./providers";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +40,9 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           {children}
         </Providers>
+        <div>
+          <Toaster />
+        </div>
       </body>
     </html>
   );

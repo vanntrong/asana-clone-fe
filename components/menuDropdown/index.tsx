@@ -9,8 +9,11 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 import { ThemeSwitch } from "../theme-switch";
+import { useAuthStore } from "@/stores/global";
 
 const MenuDropdown = () => {
+  const { user } = useAuthStore();
+
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
@@ -18,9 +21,9 @@ const MenuDropdown = () => {
           as="button"
           className="transition-transform"
           color="secondary"
-          name="Jason Hughes"
+          name={user?.name}
           size="sm"
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          src={user?.avatar}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="Profile Actions" variant="flat">

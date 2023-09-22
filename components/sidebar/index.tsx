@@ -1,11 +1,13 @@
 "use client";
 
+import { useProjectsStore } from "@/modules/projects/store";
 import { useLayoutStore } from "@/stores/global";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import clsx from "clsx";
 
 const Sidebar = () => {
   const { isShowSidebar } = useLayoutStore((state) => state);
+  const { projects } = useProjectsStore();
 
   return (
     <div
@@ -45,13 +47,9 @@ const Sidebar = () => {
         </ListboxSection>
 
         <ListboxSection title="Projects">
-          <ListboxItem
-            key="abc"
-
-            // startContent={<AddNoteIcon className={iconClasses} />}
-          >
-            TrenDi
-          </ListboxItem>
+          {projects.map((project) => (
+            <ListboxItem key={project.id}>{project.name}</ListboxItem>
+          ))}
         </ListboxSection>
       </Listbox>
     </div>

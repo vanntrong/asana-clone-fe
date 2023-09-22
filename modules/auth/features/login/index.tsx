@@ -1,16 +1,38 @@
 "use client";
 
 import { GoogleIcon } from "@/components/icons";
+import { PATHS } from "@/configs/path";
+import LoginForm from "@/modules/auth/components/loginForm";
+import LoginPasswordForm from "@/modules/auth/components/loginPasswordForm";
+import UserData from "@/modules/auth/components/userData";
+import useCheckEmail from "@/modules/auth/services/useCheckEmail";
+import useLogin from "@/modules/auth/services/useLogin";
+import { TokenName, setToken } from "@/utils/token";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
-import { Input } from "@nextui-org/input";
-import LoginForm from "@/modules/auth/components/loginForm";
-import { useState } from "react";
-import LoginPasswordForm from "@/modules/auth/components/loginPasswordForm";
-import UserData from "../../components/userData";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState<string | null>();
+  const {
+    data: checkEmailData,
+    mutate: checkEmail,
+    isLoading: isCheckEmailLoading,
+  } = useCheckEmail();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const { mutate: login, isLoading: isLoginLoading } = useLogin({
+    onSuccess: (d) => {
+      const {
+        data: {
+          token: { access_token, refresh_token },
+        },
+      } = d;
+      setToken(TokenName.ACCESS_TOKEN, access_token);
+      setToken(TokenName.REFRESH_TOKEN, refresh_token);
+      router.push(searchParams.get("nextUrl") || PATHS.HOME);
+    },
+  });
 
   return (
     <section>
@@ -20,8 +42,11 @@ const LoginPage = () => {
           To get started, please sign in
         </p>
         <div className="flex flex-col items-center justify-center mt-6 max-w-[350px] mx-auto w-full">
-          {email ? (
-            <UserData email={email} onClear={() => setEmail(null)} />
+          {checkEmailData?.data ? (
+            <UserData
+              email={checkEmailData.data.info.email}
+              onClear={() => {}}
+            />
           ) : (
             <Button
               variant="bordered"
@@ -35,10 +60,23 @@ const LoginPage = () => {
 
           <Divider className="my-4" />
 
-          {email ? (
-            <LoginPasswordForm />
+          {checkEmailData?.data ? (
+            <LoginPasswordForm
+              isLoading={isLoginLoading}
+              onSubmit={(password) =>
+                login({
+                  email: checkEmailData.data.info.email,
+                  password: password,
+                })
+              }
+            />
           ) : (
-            <LoginForm onSubmit={(email) => setEmail(email)} />
+            <LoginForm
+              onSubmit={(email) => {
+                checkEmail({ email });
+              }}
+              isLoading={isCheckEmailLoading}
+            />
           )}
         </div>
       </div>

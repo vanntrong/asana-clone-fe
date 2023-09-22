@@ -1,11 +1,25 @@
+"use client";
+
 import Sidebar from "@/components/sidebar";
 import ProjectHeader from "@/modules/home/components/projectHeader";
 import ProjectSort from "@/modules/home/components/projectSort";
 import { Divider } from "@nextui-org/divider";
 import Board from "@/modules/home/components/board";
 import AddBoard from "@/modules/home/components/addBoard";
+import useGetSections from "@/modules/projects/services/useGetSections";
+import { useSearchParams } from "next/navigation";
+import useQueryParams from "@/hooks/useQueryParams";
 
 const HomePage = () => {
+  const { searchParams } = useQueryParams();
+  const projectId = searchParams.get("projectId");
+  const {} = useGetSections(
+    { project_id: projectId },
+    {
+      enabled: !!projectId,
+    }
+  );
+
   return (
     <section className="flex">
       <Sidebar />

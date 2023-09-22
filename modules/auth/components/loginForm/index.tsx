@@ -13,9 +13,10 @@ import {
 // fill replace with user data
 interface LoginFormProps {
   onSubmit?: (email: string) => void;
+  isLoading?: boolean;
 }
 
-const LoginForm: FC<LoginFormProps> = ({ onSubmit }) => {
+const LoginForm: FC<LoginFormProps> = ({ onSubmit, isLoading }) => {
   const {
     register,
     formState: { errors },
@@ -25,7 +26,6 @@ const LoginForm: FC<LoginFormProps> = ({ onSubmit }) => {
   });
 
   const onSubmitForm = (data: LoginEmailSchema) => {
-    console.log(data);
     onSubmit?.(data.email);
   };
 
@@ -48,6 +48,7 @@ const LoginForm: FC<LoginFormProps> = ({ onSubmit }) => {
         radius="sm"
         color="primary"
         type="submit"
+        isLoading={isLoading}
       >
         <span>Continue</span>
       </Button>
