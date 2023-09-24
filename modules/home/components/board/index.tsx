@@ -3,12 +3,18 @@
 import { DotsIcon, PlusIcon } from "@/components/icons";
 import { Button } from "@nextui-org/button";
 import { Tooltip } from "@nextui-org/tooltip";
-import React from "react";
+import React, { FC } from "react";
 import Task from "../task";
 import InlineInput from "@/components/inlineInput";
+import { Section } from "@/modules/projects/types";
+import AddTask from "../addTask";
 
-const Board = () => {
-  const [title, setTitle] = React.useState("Backlog");
+interface BoardProps {
+  section: Section;
+}
+
+const Board: FC<BoardProps> = ({ section }) => {
+  const [title, setTitle] = React.useState(section.name);
 
   return (
     <div className="w-[300px] cursor-pointer border border-transparent px-2 rounded-lg transition-colors pb-1 h-full flex flex-col">
@@ -35,20 +41,12 @@ const Board = () => {
       </div>
 
       <div className="h-auto grow overflow-y-auto mt-2 flex pr-2 custom-scrollbar">
-        <div className="flex flex-col pb-5 h-max gap-4">
-          <Task />
-          <Task />
-          <Task />
-          <Task />
-          <Task />
-          <Task />
-          <Task />
-          <Task />
+        <div className="flex flex-col pb-5 h-max gap-4 w-full">
+          {section.tasks.map((task) => (
+            <Task key={task.id} task={task} />
+          ))}
 
-          <Button className="mx-auto" size="sm" variant="light">
-            <PlusIcon size={20} />
-            <span className="ml-2">Add new task</span>
-          </Button>
+          <AddTask />
         </div>
       </div>
     </div>

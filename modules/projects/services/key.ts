@@ -1,6 +1,7 @@
-import { UseGetSectionsParams } from "./useGetSections";
+import { GetSectionsParams } from "@/apis/sections/getSections";
 
 export const queryKey = {
   myProjects: () => ["myProjects"],
-  getSections: (params: UseGetSectionsParams) => ["sections", params],
+  getSections: (params: GetSectionsParams) => ["sections", params],
+  createSection: () => ["createSection"],
 };

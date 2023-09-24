@@ -3,11 +3,15 @@ import { Input, InputProps } from "@nextui-org/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/popover";
 import { Avatar, Divider } from "@nextui-org/react";
 
-const InputWithSearch = (props: InputProps) => {
+interface InputWithSearchProps extends InputProps {
+  Component?: React.ReactNode;
+}
+
+const InputWithSearch = (props: InputWithSearchProps) => {
   return (
     <Popover placement="bottom-start" radius="sm">
       <PopoverTrigger>
-        <Input {...props} />
+        {props.Component ? props.Component : <Input {...props} />}
       </PopoverTrigger>
 
       <PopoverContent className="w-96 py-3">

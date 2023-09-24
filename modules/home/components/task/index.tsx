@@ -1,13 +1,18 @@
 import { Chip } from "@nextui-org/chip";
 import { Avatar } from "@nextui-org/avatar";
-import React from "react";
+import React, { FC } from "react";
 import { Button } from "@nextui-org/button";
 import { LikeIcon } from "@/components/icons/like";
 import { CommentIcon } from "@/components/icons";
 import { Tooltip } from "@nextui-org/tooltip";
 import InlineInput from "@/components/inlineInput";
+import { Task as TaskType } from "@/modules/projects/types";
 
-const Task = () => {
+interface TaskProps {
+  task: TaskType;
+}
+
+const Task: FC<TaskProps> = ({ task }) => {
   return (
     <div className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group">
       <InlineInput

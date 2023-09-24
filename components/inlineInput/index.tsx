@@ -8,6 +8,7 @@ type ComponentProps = InputProps & TextAreaProps;
 interface InlineInputProps extends ComponentProps {
   Title: string | React.ReactNode | undefined;
   Variant?: "input" | "textarea";
+  onConfirm?: () => void;
 }
 
 const componentMap = {
@@ -15,39 +16,48 @@ const componentMap = {
   textarea: Textarea,
 };
 
-const InlineInput: FC<InlineInputProps> = ({
-  Title,
-  Variant = "input",
-  ...props
-}) => {
-  const [isFocused, setIsFocused] = React.useState(false);
+const InlineInput = React.forwardRef<HTMLInputElement, InlineInputProps>(
+  ({ Title, Variant = "input", onConfirm, ...props }, ref) => {
+    const [isFocused, setIsFocused] = React.useState(false);
 
-  const showInput = () => {
-    setIsFocused(true);
-  };
+    const showInput = () => {
+      setIsFocused(true);
+    };
 
-  const hideInput = () => {
-    setIsFocused(false);
-  };
+    const hideInput = () => {
+      setIsFocused(false);
+      onConfirm?.();
+    };
 
-  const Component = useMemo(() => componentMap[Variant], [Variant]);
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        hideInput();
+      }
+    };
 
-  return (
-    <>
-      {isFocused ? (
-        <Component
-          {...props}
-          onBlur={hideInput}
-          autoFocus
-          variant="underlined"
-        />
-      ) : (
-        <div onFocus={showInput} onClick={showInput} className="cursor-text">
-          {Title}
-        </div>
-      )}
-    </>
-  );
-};
+    const Component = useMemo(() => componentMap[Variant], [Variant]);
+
+    return (
+      <>
+        {isFocused ? (
+          <Component
+            ref={ref}
+            {...props}
+            onBlur={hideInput}
+            autoFocus
+            variant="underlined"
+            onKeyDown={handleKeyDown}
+          />
+        ) : (
+          <div onFocus={showInput} onClick={showInput} className="cursor-text">
+            {Title}
+          </div>
+        )}
+      </>
+    );
+  }
+);
+
+InlineInput.displayName = "InlineInput";
 
 export default InlineInput;

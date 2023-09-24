@@ -27,4 +27,44 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+
+  .custom-calendar {
+    background-color: transparent !important;
+    border: none !important;
+  }
+
+  .custom-calendar .react-datepicker__header {
+    background-color: transparent !important;
+  }
+
+  .custom-calendar.custom-calendar-dark .react-datepicker__current-month {
+    color: #eee !important;
+  }
+
+  .custom-calendar.custom-calendar-dark .react-datepicker__day-name {
+    color: #eee !important;
+  }
+
+  .custom-calendar-dark .custom-day.react-datepicker__day {
+    color: #eee !important;
+  }
+
+  .custom-calendar-dark .custom-day.react-datepicker__day--disabled {
+    color: #8f8f8f !important;
+  }
+  .custom-calendar-dark .custom-day.react-datepicker__day--disabled:hover {
+    background-color: transparent !important;
+  }
+
+  .custom-calendar-dark .custom-day:hover {
+    background-color: #555 !important;
+  }
+
+  .custom-calendar-dark .custom-day.react-datepicker__day--keyboard-selected {
+    background-color: #555 !important;
+  }
+
+  .custom-calendar-dark .custom-day.react-datepicker__day--selected {
+    background-color: #555 !important;
+  }
 }
