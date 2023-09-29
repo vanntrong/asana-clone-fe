@@ -23,11 +23,7 @@ const LoginPage = () => {
 
   const { mutate: login, isLoading: isLoginLoading } = useLogin({
     onSuccess: (d) => {
-      const {
-        data: {
-          token: { access_token, refresh_token },
-        },
-      } = d;
+      const { access_token, refresh_token } = d.data;
       setToken(TokenName.ACCESS_TOKEN, access_token);
       setToken(TokenName.REFRESH_TOKEN, refresh_token);
       router.push(searchParams.get("nextUrl") || PATHS.HOME);
@@ -42,11 +38,8 @@ const LoginPage = () => {
           To get started, please sign in
         </p>
         <div className="flex flex-col items-center justify-center mt-6 max-w-[350px] mx-auto w-full">
-          {checkEmailData?.data ? (
-            <UserData
-              email={checkEmailData.data.info.email}
-              onClear={() => {}}
-            />
+          {checkEmailData ? (
+            <UserData email={checkEmailData.data.email} onClear={() => {}} />
           ) : (
             <Button
               variant="bordered"
@@ -60,12 +53,12 @@ const LoginPage = () => {
 
           <Divider className="my-4" />
 
-          {checkEmailData?.data ? (
+          {checkEmailData ? (
             <LoginPasswordForm
               isLoading={isLoginLoading}
               onSubmit={(password) =>
                 login({
-                  email: checkEmailData.data.info.email,
+                  email: checkEmailData.data.email,
                   password: password,
                 })
               }

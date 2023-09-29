@@ -8,13 +8,18 @@ import Task from "../task";
 import InlineInput from "@/components/inlineInput";
 import { Section } from "@/modules/projects/types";
 import AddTask from "../addTask";
+import { CreateTaskPayload } from "@/modules/tasks/schemas/createTaskSchema";
+import { useHomeStore } from "../../stores";
 
 interface BoardProps {
   section: Section;
+  projectId: string;
+  onCreateTask: (data: CreateTaskPayload) => void;
 }
 
-const Board: FC<BoardProps> = ({ section }) => {
+const Board: FC<BoardProps> = ({ section, projectId, onCreateTask }) => {
   const [title, setTitle] = React.useState(section.name);
+  const { setSelectedTask } = useHomeStore();
 
   return (
     <div className="w-[300px] cursor-pointer border border-transparent px-2 rounded-lg transition-colors pb-1 h-full flex flex-col">
@@ -43,10 +48,14 @@ const Board: FC<BoardProps> = ({ section }) => {
       <div className="h-auto grow overflow-y-auto mt-2 flex pr-2 custom-scrollbar">
         <div className="flex flex-col pb-5 h-max gap-4 w-full">
           {section.tasks.map((task) => (
-            <Task key={task.id} task={task} />
+            <Task key={task.id} task={task} onSelect={setSelectedTask} />
           ))}
 
-          <AddTask />
+          <AddTask
+            sectionId={section.id}
+            projectId={projectId}
+            onSubmit={onCreateTask}
+          />
         </div>
       </div>
     </div>

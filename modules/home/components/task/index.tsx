@@ -6,39 +6,54 @@ import { LikeIcon } from "@/components/icons/like";
 import { CommentIcon } from "@/components/icons";
 import { Tooltip } from "@nextui-org/tooltip";
 import InlineInput from "@/components/inlineInput";
-import { Task as TaskType } from "@/modules/projects/types";
+import { Task, Task as TaskType } from "@/modules/projects/types";
+import dayjs from "dayjs";
 
 interface TaskProps {
   task: TaskType;
+  onSelect?: (task: Task) => void;
 }
 
-const Task: FC<TaskProps> = ({ task }) => {
+const Task: FC<TaskProps> = ({ task, onSelect }) => {
   return (
-    <div className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group">
+    <div
+      className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group"
+      onClick={() => onSelect?.(task)}
+    >
       <InlineInput
         Title={
-          <h2 className="text-sm font-medium dark:text-gray-200">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+          <h2
+            className="text-sm font-medium dark:text-gray-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {task.title}
           </h2>
         }
         size="sm"
         className="outline-none focus:outline-none p-0"
-        value={"Lorem ipsum dolor sit amet consectetur, adipisicing elit."}
+        value={task.title}
         Variant="textarea"
         minRows={1}
+        onClick={(e) => e.stopPropagation()}
       />
 
       <div className="my-3">
-        <Chip color="primary" radius="full" size="sm" className="text-xs">
-          abcxyz123
-        </Chip>
+        {task.tags && (
+          <Chip color="primary" radius="full" size="sm" className="text-xs">
+            {task.tags}
+          </Chip>
+        )}
 
         <div className="mt-3 flex items-center">
           <Avatar
             size="sm"
-            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            src={task.assignee.avatar}
+            name={task.assignee.name}
           />
-          <span className="text-xs text-gray-500 ml-2">Mar 24- 29</span>
+          <span className="text-xs text-gray-500 ml-2">
+            {dayjs(task.start_date).format("DD-MMM")} -{" "}
+            {dayjs(task.due_date).format("DD-MMM")}
+          </span>
 
           <div className="ml-auto space-x-2">
             <Tooltip content="Like this task">

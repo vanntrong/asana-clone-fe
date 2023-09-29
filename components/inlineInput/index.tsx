@@ -17,7 +17,7 @@ const componentMap = {
 };
 
 const InlineInput = React.forwardRef<HTMLInputElement, InlineInputProps>(
-  ({ Title, Variant = "input", onConfirm, ...props }, ref) => {
+  ({ Title, Variant = "input", onConfirm, onBlur, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     const showInput = () => {
@@ -42,11 +42,14 @@ const InlineInput = React.forwardRef<HTMLInputElement, InlineInputProps>(
         {isFocused ? (
           <Component
             ref={ref}
-            {...props}
-            onBlur={hideInput}
+            onBlur={(e) => {
+              hideInput();
+              onBlur?.(e);
+            }}
             autoFocus
             variant="underlined"
             onKeyDown={handleKeyDown}
+            {...props}
           />
         ) : (
           <div onFocus={showInput} onClick={showInput} className="cursor-text">

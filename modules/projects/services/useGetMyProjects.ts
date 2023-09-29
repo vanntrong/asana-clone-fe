@@ -1,22 +1,18 @@
-import React from "react";
-import { queryKey } from "./key";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { Response } from "@/types";
 import { axiosInstance } from "@/utils/axios";
+import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { Project } from "../types";
-import { AxiosError, AxiosResponse } from "axios";
-
-type GetMyProjectsResponse = {
-  projects: Array<Project>;
-};
+import { queryKey } from "./key";
 
 const useGetMyProjects = (
-  options?: UseQueryOptions<AxiosResponse<GetMyProjectsResponse>, AxiosError>
+  options?: UseQueryOptions<Response<Array<Project>>, AxiosError>
 ) => {
   const key = queryKey.myProjects();
 
-  return useQuery<AxiosResponse<GetMyProjectsResponse>, AxiosError>(
+  return useQuery<Response<Array<Project>>, AxiosError>(
     key,
-    () => axiosInstance.get<GetMyProjectsResponse>("/projects/me"),
+    () => axiosInstance.get("/projects/me"),
     options
   );
 };

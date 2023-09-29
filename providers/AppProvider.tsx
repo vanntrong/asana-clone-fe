@@ -14,15 +14,15 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const currentProjectId = searchParams.get("projectId");
   const { isSuccess } = useGetMe({
     onSuccess: (data) => {
-      setUser(data.data.user);
+      setUser(data.data);
     },
   });
   useGetMyProjects({
     enabled: isSuccess,
     onSuccess(data) {
-      setProjects(data.data.projects);
+      setProjects(data.data);
       if (!currentProjectId) {
-        setSearchParams({ projectId: data.data.projects[0].id });
+        setSearchParams({ projectId: data.data[0].id });
       }
     },
   });

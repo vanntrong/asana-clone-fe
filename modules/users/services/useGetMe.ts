@@ -4,19 +4,14 @@ import { axiosInstance } from "@/utils/axios";
 import { queryKey } from "./key";
 import { User } from "../types";
 import { AxiosError, AxiosResponse } from "axios";
+import { Response } from "@/types";
 
-type GetMeResponse = {
-  user: User;
-};
-
-const useGetMe = (
-  options?: UseQueryOptions<AxiosResponse<GetMeResponse>, AxiosError>
-) => {
+const useGetMe = (options?: UseQueryOptions<Response<User>, AxiosError>) => {
   const key = queryKey.getMe();
 
-  return useQuery<AxiosResponse<GetMeResponse>, AxiosError>(
+  return useQuery<Response<User>, AxiosError>(
     key,
-    () => axiosInstance.get<GetMeResponse>("/users/me"),
+    () => axiosInstance.get("/users/me"),
     options
   );
 };
