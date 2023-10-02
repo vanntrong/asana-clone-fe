@@ -8,16 +8,23 @@ import { Tooltip } from "@nextui-org/tooltip";
 import InlineInput from "@/components/inlineInput";
 import { Task, Task as TaskType } from "@/modules/projects/types";
 import dayjs from "dayjs";
+import clsx from "clsx";
 
 interface TaskProps {
   task: TaskType;
   onSelect?: (task: Task) => void;
+  isDragging?: boolean;
 }
 
-const Task: FC<TaskProps> = ({ task, onSelect }) => {
+const Task: FC<TaskProps> = ({ task, onSelect, isDragging }) => {
   return (
     <div
-      className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group"
+      className={clsx(
+        "p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group",
+        {
+          "border-blue-500 dark:border-blue-500": isDragging,
+        }
+      )}
       onClick={() => onSelect?.(task)}
     >
       <InlineInput

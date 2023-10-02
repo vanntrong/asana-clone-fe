@@ -1,9 +1,9 @@
 "use client";
 
 import DatePicker from "@/components/datePicker";
-import { CalendarIcon, PersonIcon, PlusIcon } from "@/components/icons";
-import InputWithSearch from "@/components/inputWithSearch";
-import { useOnClickOutside } from "@/hooks/useOnClickOutside";
+import { CalendarIcon, PlusIcon } from "@/components/icons";
+import useDebounceValue from "@/hooks/useDebounceValue";
+import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
 import {
   CreateTaskPayload,
   createTaskSchema,
@@ -13,7 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/button";
 import { Checkbox, Input } from "@nextui-org/react";
 import React, { FC, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import InputWithSearchUser from "../inputWithSearchUser";
 
 interface AddTaskProps {
   projectId: string;
@@ -28,6 +29,14 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const datePickRef = useRef<HTMLDivElement>(null);
 
+  const [keyword, setKeyword] = useState<string>("");
+  const keywordDebounce = useDebounceValue(keyword);
+
+  const { data } = useGetProjectMembers({
+    id: projectId,
+    keyword: keywordDebounce,
+  });
+
   const defaultValues = {
     title: "",
     is_done: false,
@@ -41,9 +50,10 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
+    setValue,
     reset,
+    control,
     formState: { errors },
   } = useForm<CreateTaskPayload>({
     resolver: zodResolver(createTaskSchema),
@@ -73,10 +83,15 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
     setIsShowAddTask(false);
   };
 
-  useOnClickOutside([containerRef, datePickRef], handleClickOutSide);
-
   return (
     <>
+      {isShowAddTask && (
+        <div
+          className="w-full h-full fixed inset-0 z-10"
+          onClick={handleClickOutSide}
+        />
+      )}
+
       {!isShowAddTask ? (
         <Button
           className="mx-auto"
@@ -89,7 +104,7 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
         </Button>
       ) : (
         <div
-          className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group"
+          className="p-2 rounded-lg border dark:border-[#2a2b2d] bg-gray-100 dark:bg-task-dark-bg group relative z-20"
           ref={containerRef}
         >
           <div className="flex items-center gap-1">
@@ -108,17 +123,17 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
             />
           </div>
           <div className="mt-4 flex items-center gap-3">
-            <InputWithSearch
-              Component={
-                <Button
-                  size="sm"
-                  isIconOnly
-                  className="min-w-6 w-6 h-6 border border-gray-500 border-dashed"
-                  radius="full"
-                >
-                  <PersonIcon size={12} />
-                </Button>
-              }
+            <Controller
+              name="assignee_id"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <InputWithSearchUser
+                  onItemClick={(item) => onChange(item.id)}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  data={data?.data}
+                  selectedItem={value}
+                />
+              )}
             />
 
             <DatePicker

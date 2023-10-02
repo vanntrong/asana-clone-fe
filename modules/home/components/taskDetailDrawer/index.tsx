@@ -11,7 +11,7 @@ import LabelInput from "./labelInput";
 import DetailDueDate from "./detailDueDate";
 import { Textarea } from "@nextui-org/input";
 import Comment from "@/components/comment";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import clsx from "clsx";
 import { Task } from "@/modules/projects/types";
 import { Controller, useForm } from "react-hook-form";
@@ -22,6 +22,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import InlineInput from "@/components/inlineInput";
 import useUpdateFormValues from "@/hooks/useUpdateFormValue";
+import InputWithSearchUser from "../inputWithSearchUser";
+import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
+import useDebounceValue from "@/hooks/useDebounceValue";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
@@ -49,7 +52,23 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
       ...task,
     },
   });
+  const [keyword, setKeyword] = useState<string>("");
+  const keywordDebounce = useDebounceValue(keyword);
+  const { data } = useGetProjectMembers(
+    {
+      id: task?.project_id,
+      keyword: keywordDebounce,
+    },
+    {
+      enabled: !!task?.project_id,
+    }
+  );
   const title = watch("title");
+  const selectedAssigneeId = watch("assignee_id");
+
+  const selectedAssignee = data?.data.find(
+    (item) => item.id === selectedAssigneeId
+  );
 
   useUpdateFormValues(setValue, task);
 
@@ -116,23 +135,34 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
 
             <div className="mt-6 flex flex-col gap-y-3">
               <LabelInput label="Assignee">
-                <InputWithSearch
-                  Component={
-                    <Button
-                      size="sm"
-                      radius="sm"
-                      variant="light"
-                      startContent={
-                        <Avatar
-                          className="w-6 h-6 border border-dashed border-gray-200"
-                          src={task?.assignee.avatar}
-                        />
+                <Controller
+                  name="assignee_id"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <InputWithSearchUser
+                      onItemClick={(item) => onChange(item.id)}
+                      selectedItem={value}
+                      data={data?.data}
+                      Component={
+                        <Button
+                          size="sm"
+                          radius="sm"
+                          variant="light"
+                          startContent={
+                            <Avatar
+                              className="w-6 h-6 border border-dashed border-gray-200"
+                              src={selectedAssignee?.avatar}
+                            />
+                          }
+                          className="text-gray-300"
+                        >
+                          {selectedAssignee
+                            ? selectedAssignee.name
+                            : "No assignee"}
+                        </Button>
                       }
-                      className="text-gray-300"
-                    >
-                      {task?.assignee ? task?.assignee.name : "No assignee"}
-                    </Button>
-                  }
+                    />
+                  )}
                 />
               </LabelInput>
               <LabelInput label="Due date">

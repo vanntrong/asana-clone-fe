@@ -19,6 +19,9 @@ import TaskDetailDrawer from "../../components/taskDetailDrawer";
 import { useHomeStore } from "../../stores";
 import useUpdateTask from "@/modules/tasks/services/useUpdateTask";
 import { UpdateTaskPayload } from "@/modules/tasks/schemas/updateTaskSchema";
+import useUpdateSection from "@/modules/projects/services/useUpdateSection";
+import { GetSectionsResponse } from "@/apis/sections/getSections";
+import { DragDropContext } from "react-beautiful-dnd";
 
 const HomePage = () => {
   const { searchParams } = useQueryParams();
@@ -41,6 +44,25 @@ const HomePage = () => {
       queryClient.invalidateQueries(key);
     },
   });
+
+  const { mutate: updateSection } = useUpdateSection({
+    onSuccess: (data) => {
+      const key = queryKey.getSections({ project_id: projectId });
+      queryClient.setQueryData(key, (old?: GetSectionsResponse) => {
+        if (!old) return old;
+
+        old.data = old.data.map((section) =>
+          section.id !== data.data.id ? section : data.data
+        );
+
+        return {
+          ...old,
+          data: [...old.data],
+        };
+      });
+    },
+  });
+
   const { mutate: createTask } = useCreateTask({
     onSuccess(_, variables) {
       const key = taskKey.getTasks({
@@ -62,7 +84,6 @@ const HomePage = () => {
     },
   });
 
-  const [isOpen, setIsOpen] = useState(false);
   const { selectedTask, setSelectedTask } = useHomeStore();
 
   const sectionsData = useMemo(() => {
@@ -95,16 +116,23 @@ const HomePage = () => {
         <ProjectSort />
         <Divider className="mt-2" />
         <div className="px-4 min-h-0 flex gap-x-4 relative h-full">
-          {sectionsData?.map((section) => (
-            <div key={section.id} className="mt-2">
-              <Board
-                key={section.id}
-                section={section}
-                projectId={projectId || ""}
-                onCreateTask={createTask}
-              />
-            </div>
-          ))}
+          <DragDropContext
+            onDragEnd={(result) => {
+              console.log(result);
+            }}
+          >
+            {sectionsData?.map((section) => (
+              <div key={section.id} className="mt-2">
+                <Board
+                  key={section.id}
+                  section={section}
+                  projectId={projectId || ""}
+                  onCreateTask={createTask}
+                  onUpdateBoard={updateSection}
+                />
+              </div>
+            ))}
+          </DragDropContext>
           <div className="mt-2">
             <AddBoard onSubmit={handleSubmit} />
           </div>
