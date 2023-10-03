@@ -10,4 +10,5 @@ export const queryKey = {
     params,
   ],
   updateSection: () => ["updateSection"],
+  createProject: () => ["createProject"],
 };

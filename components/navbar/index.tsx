@@ -17,6 +17,13 @@ import { Button } from "@nextui-org/button";
 import Link from "next/link";
 import CreateDropdown from "../createDropdown";
 import MenuDropdown from "../menuDropdown";
+import { useState } from "react";
+import ModalAddProject from "@/modules/projects/components/modalAddProject";
+import useCreateProject from "@/modules/projects/services/useCreateProject";
+import { queryClient } from "@/app/providers";
+import { queryKey } from "@/modules/projects/services/key";
+import { useRouter } from "next/navigation";
+import { PATHS } from "@/configs/path";
 
 interface NavbarProps {
   isAuth?: boolean;
@@ -24,6 +31,19 @@ interface NavbarProps {
 
 const Navbar = ({ isAuth }: NavbarProps) => {
   const { toggleIsShowSidebar } = useLayoutStore((state) => state);
+  const router = useRouter();
+  const [isShowAddProjectModal, setIsShowAddProjectModal] =
+    useState<boolean>(false);
+
+  const { mutate: createProject, isLoading: isCreatingProject } =
+    useCreateProject({
+      onSuccess(data) {
+        setIsShowAddProjectModal(false);
+        const key = queryKey.myProjects();
+        queryClient.invalidateQueries(key);
+        router.push(`${PATHS.HOME}/?projectId=${data.data.id}`);
+      },
+    });
 
   const searchInput = (
     <Input
@@ -68,7 +88,9 @@ const Navbar = ({ isAuth }: NavbarProps) => {
           >
             <MenuIcon />
           </Button>
-          <CreateDropdown />
+          <CreateDropdown
+            onClickAddProject={() => setIsShowAddProjectModal(true)}
+          />
         </NavbarContent>
       )}
 
@@ -91,6 +113,13 @@ const Navbar = ({ isAuth }: NavbarProps) => {
         {searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2"></div>
       </NavbarMenu>
+
+      <ModalAddProject
+        isOpen={isShowAddProjectModal}
+        onOpenChange={(open) => setIsShowAddProjectModal(open)}
+        onSubmit={createProject}
+        isLoading={isCreatingProject}
+      />
     </NextUINavbar>
   );
 };

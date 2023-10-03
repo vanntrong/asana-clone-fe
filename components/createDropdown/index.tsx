@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { FC } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -10,7 +10,11 @@ import {
 } from "@nextui-org/react";
 import { PlusIcon } from "../icons";
 
-const CreateDropdown = () => {
+interface CreateDropdownProps {
+  onClickAddProject: () => void;
+}
+
+const CreateDropdown: FC<CreateDropdownProps> = ({ onClickAddProject }) => {
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -20,7 +24,9 @@ const CreateDropdown = () => {
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions">
         <DropdownItem key="task">Task</DropdownItem>
-        <DropdownItem key="project">Project</DropdownItem>
+        <DropdownItem key="project" onClick={onClickAddProject}>
+          Project
+        </DropdownItem>
         <DropdownItem key="invite" className="text-primary" color="primary">
           Invite
         </DropdownItem>

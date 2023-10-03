@@ -8,27 +8,34 @@ import { CheckIcon, PersonIcon } from "@/components/icons";
 import { Avatar } from "@nextui-org/react";
 import clsx from "clsx";
 
-interface InputWithSearchUserProps
+export interface InputWithSearchUserProps
   extends Omit<InputWithSearchProps<User>, "renderItem"> {
   onItemClick: (item: User) => void;
-  selectedItem?: string;
+  selectedItem?: string | string[];
+  disabledItems?: string[];
 }
 
 const InputWithSearchUser = ({
   onItemClick,
   selectedItem,
+  disabledItems,
   ...props
 }: InputWithSearchUserProps) => {
+  const selected = Array.isArray(selectedItem) ? selectedItem : [selectedItem];
+
   return (
     <InputWithSearch<User>
       renderItem={(item) => (
         <Button
           fullWidth
           onClick={() => onItemClick(item)}
-          endContent={selectedItem === item.id ? <CheckIcon size={16} /> : null}
+          endContent={
+            selected.includes(item.id) ? <CheckIcon size={16} /> : null
+          }
           className={clsx({
-            "bg-gray-100 dark:bg-gray-700": selectedItem === item.id,
+            "bg-gray-100 dark:bg-[#3F3F46]": selected.includes(item.id),
           })}
+          isDisabled={disabledItems?.includes(item.id)}
         >
           <div className="flex items-center gap-2">
             <Avatar size="sm" src={item.avatar} />
