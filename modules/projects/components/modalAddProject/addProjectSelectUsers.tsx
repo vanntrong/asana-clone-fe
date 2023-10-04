@@ -10,16 +10,18 @@ import clsx from "clsx";
 import { FC, useEffect, useState } from "react";
 
 interface AddProjectSelectUsersProps {
-  value: string[];
+  value?: string[];
   onChange: (value: string[]) => void;
   label: string;
   disabledItems?: string[];
+  excludeInProject?: string;
 }
 
 const AddProjectSelectUsers: FC<AddProjectSelectUsersProps> = ({
-  value,
+  value = [],
   onChange,
   label,
+  excludeInProject,
   ...props
 }) => {
   const [keyword, setKeyword] = useState<string>("");
@@ -29,6 +31,7 @@ const AddProjectSelectUsers: FC<AddProjectSelectUsersProps> = ({
     page: 1,
     limit: 10,
     keyword: keywordDebounce,
+    exclude_in_project: excludeInProject,
   });
   const { data, isFetching } = useGetListUser(params);
 

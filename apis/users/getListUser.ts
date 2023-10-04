@@ -4,7 +4,9 @@ import { axiosInstance } from "@/utils/axios";
 
 export type GetListUsersResponse = PaginationResponse<User>;
 
-export type GetListUsersParams = PaginationParams;
+export type GetListUsersParams = PaginationParams & {
+  exclude_in_project?: string;
+};
 
 export const getListUsers = (
   params: GetListUsersParams

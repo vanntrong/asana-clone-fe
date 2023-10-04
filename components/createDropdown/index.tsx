@@ -12,9 +12,13 @@ import { PlusIcon } from "../icons";
 
 interface CreateDropdownProps {
   onClickAddProject: () => void;
+  onClickAddMembers: () => void;
 }
 
-const CreateDropdown: FC<CreateDropdownProps> = ({ onClickAddProject }) => {
+const CreateDropdown: FC<CreateDropdownProps> = ({
+  onClickAddProject,
+  onClickAddMembers,
+}) => {
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -27,7 +31,12 @@ const CreateDropdown: FC<CreateDropdownProps> = ({ onClickAddProject }) => {
         <DropdownItem key="project" onClick={onClickAddProject}>
           Project
         </DropdownItem>
-        <DropdownItem key="invite" className="text-primary" color="primary">
+        <DropdownItem
+          key="invite"
+          className="text-primary"
+          color="primary"
+          onClick={onClickAddMembers}
+        >
           Invite
         </DropdownItem>
       </DropdownMenu>

@@ -24,6 +24,10 @@ import { queryClient } from "@/app/providers";
 import { queryKey } from "@/modules/projects/services/key";
 import { useRouter } from "next/navigation";
 import { PATHS } from "@/configs/path";
+import ModalAddMembers from "@/modules/projects/components/modalAddMembers";
+import useAddMembers from "@/modules/projects/services/useAddMembers";
+import useQueryParams from "@/hooks/useQueryParams";
+import { AddMembersData } from "@/modules/projects/schemas/addMembersSchema";
 
 interface NavbarProps {
   isAuth?: boolean;
@@ -32,7 +36,12 @@ interface NavbarProps {
 const Navbar = ({ isAuth }: NavbarProps) => {
   const { toggleIsShowSidebar } = useLayoutStore((state) => state);
   const router = useRouter();
+  const { searchParams } = useQueryParams();
+  const projectId = searchParams.get("projectId");
   const [isShowAddProjectModal, setIsShowAddProjectModal] =
+    useState<boolean>(false);
+
+  const [isShowAddMemberModal, setIsShowAddMemberModal] =
     useState<boolean>(false);
 
   const { mutate: createProject, isLoading: isCreatingProject } =
@@ -44,6 +53,17 @@ const Navbar = ({ isAuth }: NavbarProps) => {
         router.push(`${PATHS.HOME}/?projectId=${data.data.id}`);
       },
     });
+
+  const { mutate: addMembers, isLoading: isAddingMembers } = useAddMembers({
+    onSuccess() {
+      setIsShowAddProjectModal(false);
+    },
+  });
+
+  const handleAddMembers = (data: AddMembersData) => {
+    if (!projectId) return;
+    addMembers({ ...data, projectId });
+  };
 
   const searchInput = (
     <Input
@@ -90,6 +110,7 @@ const Navbar = ({ isAuth }: NavbarProps) => {
           </Button>
           <CreateDropdown
             onClickAddProject={() => setIsShowAddProjectModal(true)}
+            onClickAddMembers={() => setIsShowAddMemberModal(true)}
           />
         </NavbarContent>
       )}
@@ -119,6 +140,14 @@ const Navbar = ({ isAuth }: NavbarProps) => {
         onOpenChange={(open) => setIsShowAddProjectModal(open)}
         onSubmit={createProject}
         isLoading={isCreatingProject}
+      />
+
+      <ModalAddMembers
+        isOpen={isShowAddMemberModal}
+        onOpenChange={(open) => setIsShowAddMemberModal(open)}
+        onSubmit={handleAddMembers}
+        isLoading={isAddingMembers}
+        projectId={projectId as string}
       />
     </NextUINavbar>
   );

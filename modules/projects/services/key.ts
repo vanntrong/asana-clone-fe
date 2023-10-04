@@ -11,4 +11,5 @@ export const queryKey = {
   ],
   updateSection: () => ["updateSection"],
   createProject: () => ["createProject"],
+  addMembers: () => ["addMembers"],
 };
