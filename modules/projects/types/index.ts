@@ -24,6 +24,8 @@ export type Task = {
   created_by_id: string;
   parent_task_id: string;
   section_id: string;
+  is_liked?: boolean;
+  like_count: number;
   assignee: User;
   created_by: User;
 };

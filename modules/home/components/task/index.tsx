@@ -2,7 +2,7 @@ import { Chip } from "@nextui-org/chip";
 import { Avatar } from "@nextui-org/avatar";
 import React, { FC } from "react";
 import { Button } from "@nextui-org/button";
-import { LikeIcon } from "@/components/icons/like";
+import { LikeFilledIcon, LikeIcon } from "@/components/icons/like";
 import { CommentIcon } from "@/components/icons";
 import { Tooltip } from "@nextui-org/tooltip";
 import InlineInput from "@/components/inlineInput";
@@ -14,9 +14,10 @@ interface TaskProps {
   task: TaskType;
   onSelect?: (task: Task) => void;
   isDragging?: boolean;
+  onLikeClick?: (taskId: string) => void;
 }
 
-const Task: FC<TaskProps> = ({ task, onSelect, isDragging }) => {
+const Task: FC<TaskProps> = ({ task, onSelect, isDragging, onLikeClick }) => {
   return (
     <div
       className={clsx(
@@ -62,15 +63,28 @@ const Task: FC<TaskProps> = ({ task, onSelect, isDragging }) => {
             {dayjs(task.due_date).format("DD-MMM")}
           </span>
 
-          <div className="ml-auto space-x-2">
-            <Tooltip content="Like this task">
+          <div className="ml-auto space-x-2 flex items-center">
+            <Tooltip
+              content={task.is_liked ? "Unlike this task" : "Like this task"}
+            >
               <Button
                 size="sm"
                 variant="light"
-                className="opacity-0 transition-all group-hover:opacity-100"
+                className={clsx(
+                  "opacity-0 transition-all group-hover:opacity-100",
+                  {
+                    "opacity-100": task.is_liked,
+                  }
+                )}
                 isIconOnly
+                onClick={() => onLikeClick?.(task.id)}
               >
-                <LikeIcon size={16} />
+                <span className="mr-1">{task.like_count}</span>
+                {task.is_liked ? (
+                  <LikeFilledIcon size={16} color="#0096c7" />
+                ) : (
+                  <LikeIcon size={16} />
+                )}
               </Button>
             </Tooltip>
             <Tooltip content="Comment">

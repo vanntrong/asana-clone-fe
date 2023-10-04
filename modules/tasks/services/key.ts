@@ -5,4 +5,5 @@ export const queryKey = {
   getTasks: (params: GetTasksParams) => ["getTasks", params],
   updateTask: () => ["updateTask"],
   updateOrderTasks: () => ["updateOrderTasks"],
+  likeTask: () => ["likeTask"],
 };

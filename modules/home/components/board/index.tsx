@@ -1,17 +1,20 @@
 "use client";
 
+import { queryClient } from "@/app/providers";
 import { DotsIcon, PlusIcon } from "@/components/icons";
+import InlineInput from "@/components/inlineInput";
+import { useHomeStore } from "@/modules/home/stores";
+import { Section, Task as TaskType } from "@/modules/projects/types";
+import { CreateTaskPayload } from "@/modules/tasks/schemas/createTaskSchema";
+import { queryKey } from "@/modules/tasks/services/key";
+import useLikeTask from "@/modules/tasks/services/useLikeTask";
 import { Button } from "@nextui-org/button";
 import { Tooltip } from "@nextui-org/tooltip";
-import React, { FC } from "react";
-import Task from "../task";
-import InlineInput from "@/components/inlineInput";
-import { Section } from "@/modules/projects/types";
-import AddTask from "../addTask";
-import { CreateTaskPayload } from "@/modules/tasks/schemas/createTaskSchema";
-import { useHomeStore } from "@/modules/home/stores";
-import { Draggable, Droppable } from "react-beautiful-dnd";
 import clsx from "clsx";
+import React, { FC } from "react";
+import { Draggable, Droppable } from "react-beautiful-dnd";
+import AddTask from "../addTask";
+import Task from "../task";
 
 interface BoardProps {
   section: Section;
@@ -28,6 +31,38 @@ const Board: FC<BoardProps> = ({
 }) => {
   const [title, setTitle] = React.useState(section.name);
   const { setSelectedTask } = useHomeStore();
+  const { mutate: likeTask } = useLikeTask({
+    onSuccess(data, variables, context) {
+      const key = queryKey.getTasks({
+        section_id: section.id,
+        project_id: projectId,
+      });
+      queryClient.setQueryData(key, (old: any) => {
+        if (!old) return old;
+
+        old.data = old.data.map((task: TaskType) =>
+          task.id === variables.task_id
+            ? {
+                ...task,
+                is_liked: !task.is_liked,
+                like_count: task.is_liked
+                  ? task.like_count - 1
+                  : task.like_count + 1,
+              }
+            : task
+        );
+
+        return old;
+      });
+    },
+  });
+
+  const handleLikeClick = (taskId: string) => {
+    likeTask({
+      project_id: projectId,
+      task_id: taskId,
+    });
+  };
 
   return (
     <div className="w-[300px] cursor-pointer border border-transparent px-2 rounded-lg transition-colors pb-1 h-full flex flex-col">
@@ -75,6 +110,7 @@ const Board: FC<BoardProps> = ({
                           task={task}
                           onSelect={setSelectedTask}
                           isDragging={snapshot.isDragging}
+                          onLikeClick={handleLikeClick}
                         />
                       </div>
                     )}
