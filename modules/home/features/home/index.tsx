@@ -1,5 +1,6 @@
 "use client";
 
+import { GetSectionsResponse } from "@/apis/sections/getSections";
 import { queryClient } from "@/app/providers";
 import Sidebar from "@/components/sidebar";
 import useQueryParams from "@/hooks/useQueryParams";
@@ -10,20 +11,19 @@ import ProjectSort from "@/modules/home/components/projectSort";
 import { queryKey } from "@/modules/projects/services/key";
 import useCreateSection from "@/modules/projects/services/useCreateSection";
 import useGetSections from "@/modules/projects/services/useGetSections";
+import useUpdateSection from "@/modules/projects/services/useUpdateSection";
+import { useProjectsStore } from "@/modules/projects/store";
+import { UpdateTaskPayload } from "@/modules/tasks/schemas/updateTaskSchema";
 import { queryKey as taskKey } from "@/modules/tasks/services/key";
 import useCreateTask from "@/modules/tasks/services/useCreateTask";
 import useGetTasks from "@/modules/tasks/services/useGetTasks";
+import useUpdateOrderTasks from "@/modules/tasks/services/useUpdateOrderTasks";
+import useUpdateTask from "@/modules/tasks/services/useUpdateTask";
 import { Divider } from "@nextui-org/divider";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import TaskDetailDrawer from "../../components/taskDetailDrawer";
 import { useHomeStore } from "../../stores";
-import useUpdateTask from "@/modules/tasks/services/useUpdateTask";
-import { UpdateTaskPayload } from "@/modules/tasks/schemas/updateTaskSchema";
-import useUpdateSection from "@/modules/projects/services/useUpdateSection";
-import { GetSectionsResponse } from "@/apis/sections/getSections";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import useUpdateOrderTasks from "@/modules/tasks/services/useUpdateOrderTasks";
-import { useProjectsStore } from "@/modules/projects/store";
 
 const HomePage = () => {
   const { searchParams } = useQueryParams();
@@ -41,67 +41,23 @@ const HomePage = () => {
       enabled: !!projectId,
     }
   );
+
   const tasks = useGetTasks(
     sections?.data.map((section) => ({
       section_id: section.id,
       project_id: projectId || "",
     }))
   );
-  const { mutate: createSection } = useCreateSection({
-    onSuccess: () => {
-      const key = queryKey.getSections({ project_id: projectId });
-      queryClient.invalidateQueries(key);
-    },
-  });
 
-  const { mutate: updateSection } = useUpdateSection({
-    onSuccess: (data) => {
-      const key = queryKey.getSections({ project_id: projectId });
-      queryClient.setQueryData(key, (old?: GetSectionsResponse) => {
-        if (!old) return old;
+  const { mutate: createSection } = useCreateSection();
 
-        old.data = old.data.map((section) =>
-          section.id !== data.data.id ? section : data.data
-        );
+  const { mutate: updateSection } = useUpdateSection();
 
-        return {
-          ...old,
-          data: [...old.data],
-        };
-      });
-    },
-  });
+  const { mutate: createTask } = useCreateTask();
 
-  const { mutate: createTask } = useCreateTask({
-    onSuccess(_, variables) {
-      const key = taskKey.getTasks({
-        project_id: variables.project_id,
-        section_id: variables.section_id,
-      });
-      queryClient.invalidateQueries(key);
-    },
-  });
+  const { mutate: updateTask } = useUpdateTask();
 
-  const { mutate: updateTask } = useUpdateTask({
-    onSuccess: () => {
-      if (!projectId || !selectedTask) return;
-      const key = taskKey.getTasks({
-        project_id: projectId,
-        section_id: selectedTask.section_id,
-      });
-      queryClient.invalidateQueries(key);
-    },
-  });
-
-  const { mutate: updateOrderTask } = useUpdateOrderTasks({
-    onSuccess(data, variables, context) {
-      const key = taskKey.getTasks({
-        project_id: variables.project_id,
-        section_id: variables.section_id,
-      });
-      queryClient.invalidateQueries(key);
-    },
-  });
+  const { mutate: updateOrderTask } = useUpdateOrderTasks();
 
   const { selectedTask, setSelectedTask } = useHomeStore();
 
@@ -262,6 +218,13 @@ const HomePage = () => {
             onClose={() => setSelectedTask(null)}
             task={selectedTask}
             onSubmit={handleUpdateTask}
+            onLikeClick={() => {
+              if (!selectedTask) return;
+              setSelectedTask({
+                ...selectedTask,
+                is_liked: !selectedTask.is_liked,
+              });
+            }}
           />
         </div>
       </div>

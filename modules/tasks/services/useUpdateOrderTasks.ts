@@ -6,6 +6,7 @@ import {
   updateOrderTasksApi,
 } from "@/apis/tasks/updateOrderTasks";
 import { AxiosError } from "axios";
+import { queryClient } from "@/app/providers";
 
 const useUpdateOrderTasks = (
   options?: UseMutationOptions<unknown, AxiosError, UpdateOrderTasksData>
@@ -15,7 +16,16 @@ const useUpdateOrderTasks = (
   return useMutation<unknown, AxiosError, UpdateOrderTasksData>(
     key,
     (payload) => updateOrderTasksApi(payload),
-    options
+    {
+      onSuccess(_, variables) {
+        const key = queryKey.getTasks({
+          project_id: variables.project_id,
+          section_id: variables.section_id,
+        });
+        queryClient.invalidateQueries(key);
+      },
+      ...options,
+    }
   );
 };
 

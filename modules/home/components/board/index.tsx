@@ -31,36 +31,13 @@ const Board: FC<BoardProps> = ({
 }) => {
   const [title, setTitle] = React.useState(section.name);
   const { setSelectedTask } = useHomeStore();
-  const { mutate: likeTask } = useLikeTask({
-    onSuccess(data, variables, context) {
-      const key = queryKey.getTasks({
-        section_id: section.id,
-        project_id: projectId,
-      });
-      queryClient.setQueryData(key, (old: any) => {
-        if (!old) return old;
-
-        old.data = old.data.map((task: TaskType) =>
-          task.id === variables.task_id
-            ? {
-                ...task,
-                is_liked: !task.is_liked,
-                like_count: task.is_liked
-                  ? task.like_count - 1
-                  : task.like_count + 1,
-              }
-            : task
-        );
-
-        return old;
-      });
-    },
-  });
+  const { mutate: likeTask } = useLikeTask();
 
   const handleLikeClick = (taskId: string) => {
     likeTask({
       project_id: projectId,
       task_id: taskId,
+      section_id: section.id,
     });
   };
 

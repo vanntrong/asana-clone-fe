@@ -6,6 +6,8 @@ import { queryKey } from "./key";
 import { Task } from "@/modules/projects/types";
 import { UpdateTaskPayload } from "../schemas/updateTaskSchema";
 import { updateTaskApi } from "@/apis/tasks/updateTask";
+import { queryKey as taskKey } from "@/modules/tasks/services/key";
+import { queryClient } from "@/app/providers";
 
 const useUpdateTask = (
   options?: UseMutationOptions<
@@ -20,7 +22,17 @@ const useUpdateTask = (
     key,
     ({ id, data }: { id: string; data: UpdateTaskPayload }) =>
       updateTaskApi(id, data),
-    options
+    {
+      onSuccess: (_, variables) => {
+        if (!variables.data.project_id || !variables.data.section_id) return;
+        const key = taskKey.getTasks({
+          project_id: variables.data.project_id,
+          section_id: variables.data.section_id,
+        });
+        queryClient.invalidateQueries(key);
+      },
+      ...options,
+    }
   );
 };
 

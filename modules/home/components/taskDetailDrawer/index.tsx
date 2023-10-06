@@ -1,6 +1,6 @@
 "use client";
 
-import { LikeIcon } from "@/components/icons/like";
+import { LikeFilledIcon, LikeIcon } from "@/components/icons/like";
 import InputWithSearch from "@/components/inputWithSearch";
 import { Button } from "@nextui-org/button";
 import { Avatar } from "@nextui-org/react";
@@ -10,8 +10,8 @@ import { FiCheck } from "react-icons/fi";
 import LabelInput from "./labelInput";
 import DetailDueDate from "./detailDueDate";
 import { Textarea } from "@nextui-org/input";
-import Comment from "@/components/comment";
-import { FC, useEffect, useState } from "react";
+import Comment from "@/modules/comments/components/comment";
+import { FC, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { Task } from "@/modules/projects/types";
 import { Controller, useForm } from "react-hook-form";
@@ -25,11 +25,18 @@ import useUpdateFormValues from "@/hooks/useUpdateFormValue";
 import InputWithSearchUser from "../inputWithSearchUser";
 import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
 import useDebounceValue from "@/hooks/useDebounceValue";
+import useLikeTask from "@/modules/tasks/services/useLikeTask";
+import { GetCommentsParams } from "@/apis/comments/getComments";
+import useGetComments from "@/modules/comments/services/useGetComments";
+import { PaginationParams } from "@/types";
+import useCreateComment from "@/modules/comments/services/useCreateComment";
+import AddComment from "./addComment";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   task: Task | null;
+  onLikeClick?: (taskId: string) => void;
   onSubmit?: (data: UpdateTaskPayload) => void;
 }
 
@@ -38,20 +45,38 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   onClose,
   task,
   onSubmit: _onSubmit,
+  onLikeClick,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    control,
-    formState: { errors },
-  } = useForm<UpdateTaskPayload>({
-    resolver: zodResolver(updateTaskSchema),
-    defaultValues: {
-      ...task,
+  const { mutate: likeTask } = useLikeTask({
+    onSuccess: () => {
+      if (!task) return;
+      onLikeClick?.(task.id);
     },
   });
+
+  const [query, setQuery] = useState<PaginationParams>({});
+
+  const getCommentsParams: GetCommentsParams = useMemo(
+    () => ({
+      ...query,
+      task_id: task?.id || "",
+    }),
+    [query, task?.id]
+  );
+
+  const { data: comments, isLoading } = useGetComments(getCommentsParams, {
+    enabled: !!task,
+  });
+
+  const { mutate: createComment } = useCreateComment();
+
+  const { register, handleSubmit, setValue, watch, control } =
+    useForm<UpdateTaskPayload>({
+      resolver: zodResolver(updateTaskSchema),
+      defaultValues: {
+        ...task,
+      },
+    });
   const [keyword, setKeyword] = useState<string>("");
   const keywordDebounce = useDebounceValue(keyword);
   const { data } = useGetProjectMembers(
@@ -80,6 +105,15 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
     });
   };
 
+  const handleLikeClick = () => {
+    if (!task) return;
+    likeTask({
+      project_id: task.project_id,
+      task_id: task.id,
+      section_id: task.section_id,
+    });
+  };
+
   return (
     <>
       <div
@@ -104,8 +138,18 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
               Mask completed
             </Button>
             <div className="flex items-center gap-x-3">
-              <Button size="sm" radius="sm" isIconOnly variant="light">
-                <LikeIcon size={16} />
+              <Button
+                size="sm"
+                radius="sm"
+                isIconOnly
+                variant="light"
+                onClick={handleLikeClick}
+              >
+                {task?.is_liked ? (
+                  <LikeFilledIcon size={16} color="#0096c7" />
+                ) : (
+                  <LikeIcon size={16} />
+                )}
               </Button>
               <Button size="sm" radius="sm" isIconOnly variant="light">
                 <BsLink size={18} />
@@ -125,7 +169,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-col p-4 min-h-[500px]">
+          <div className="flex flex-col p-4 min-h-[400px]">
             <InlineInput
               Title={
                 <h2 className="text-xl font-medium dark:text-white">{title}</h2>
@@ -188,7 +232,6 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
                 <Button
                   size="sm"
                   radius="sm"
-                  // isDisabled={!isValid}
                   color="primary"
                   onClick={handleSubmit(onSubmit)}
                 >
@@ -202,16 +245,16 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
         <div className="p-4 mt-auto">
           <h2 className="text-md font-medium dark:text-gray-500">Comment</h2>
 
-          <div className="mt-6 flex flex-col gap-y-3">
-            <Comment />
-            <Comment />
-            <Comment />
+          <div className="mt-6 flex flex-col gap-y-3 max-h-[400px] overflow-auto custom-scrollbar">
+            {comments?.data.map((comment) => (
+              <Comment key={comment.id} comment={comment} />
+            ))}
           </div>
         </div>
         <div className="py-3 px-4 border-t border-t-gray-600">
           <div className="flex items-start gap-x-2">
             <Avatar className="mt-[6px]" />
-            <Textarea placeholder="Add a comment" radius="sm" label={null} />
+            <AddComment taskId={task?.id} onSubmit={createComment} />
           </div>
         </div>
       </div>
