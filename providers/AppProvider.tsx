@@ -21,9 +21,10 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     enabled: isSuccess,
     onSuccess(data) {
       setProjects(data.data);
-      if (!currentProjectId) {
-        setSearchParams({ projectId: data.data[0].id });
+      if (currentProjectId || data.data.length === 0) {
+        return;
       }
+      setSearchParams({ projectId: data.data[0].id });
     },
   });
 

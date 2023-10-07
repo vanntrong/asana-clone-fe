@@ -18,20 +18,31 @@ import {
 } from "@nextui-org/react";
 import { Controller, useForm } from "react-hook-form";
 import AddProjectSelectUsers from "./addProjectSelectUsers";
+import useCreateProject from "../../services/useCreateProject";
+import { queryKey } from "../../services/key";
+import { queryClient } from "@/app/providers";
+import { useRouter } from "next/navigation";
+import { PATHS } from "@/configs/path";
 
 interface ModalAddProjectProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CreateProjectPayload) => void;
-  isLoading?: boolean;
 }
 
 const ModalAddProject: FC<ModalAddProjectProps> = ({
   isOpen,
   onOpenChange,
-  onSubmit,
-  isLoading,
 }) => {
+  const router = useRouter();
+  const { mutate: createProject, isLoading: isCreatingProject } =
+    useCreateProject({
+      onSuccess(data) {
+        onOpenChange(false);
+        const key = queryKey.myProjects();
+        queryClient.invalidateQueries(key);
+        router.push(`${PATHS.HOME}/?projectId=${data.data.id}`);
+      },
+    });
   const {
     register,
     control,
@@ -62,6 +73,10 @@ const ModalAddProject: FC<ModalAddProjectProps> = ({
   const handelClose = () => {
     reset();
     onOpenChange(false);
+  };
+
+  const onSubmit = (data: CreateProjectPayload) => {
+    createProject(data);
   };
 
   return (
@@ -122,7 +137,7 @@ const ModalAddProject: FC<ModalAddProjectProps> = ({
               <Button
                 color="primary"
                 onClick={handleSubmit(onSubmit)}
-                isLoading={isLoading}
+                isLoading={isCreatingProject}
               >
                 Add
               </Button>

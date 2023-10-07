@@ -6,6 +6,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { SessionProvider } from "next-auth/react";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -27,7 +28,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <NextUIProvider>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        <SessionProvider>
+          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        </SessionProvider>
       </NextUIProvider>
     </QueryClientProvider>
   );

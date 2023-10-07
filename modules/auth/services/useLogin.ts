@@ -6,7 +6,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { LoginSchema } from "../schemas/loginSchema";
 import { Response } from "@/types";
 
-type LoginResponse = Response<{
+export type LoginResponse = Response<{
   access_token: string;
   refresh_token: string;
 }>;

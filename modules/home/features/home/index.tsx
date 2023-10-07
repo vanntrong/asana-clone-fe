@@ -1,6 +1,5 @@
 "use client";
 
-import { GetSectionsResponse } from "@/apis/sections/getSections";
 import { queryClient } from "@/app/providers";
 import Sidebar from "@/components/sidebar";
 import useQueryParams from "@/hooks/useQueryParams";
@@ -8,7 +7,6 @@ import AddBoard from "@/modules/home/components/addBoard";
 import Board from "@/modules/home/components/board";
 import ProjectHeader from "@/modules/home/components/projectHeader";
 import ProjectSort from "@/modules/home/components/projectSort";
-import { queryKey } from "@/modules/projects/services/key";
 import useCreateSection from "@/modules/projects/services/useCreateSection";
 import useGetSections from "@/modules/projects/services/useGetSections";
 import useUpdateSection from "@/modules/projects/services/useUpdateSection";
@@ -22,6 +20,7 @@ import useUpdateTask from "@/modules/tasks/services/useUpdateTask";
 import { Divider } from "@nextui-org/divider";
 import { useCallback, useMemo } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import NoProject from "../../components/noProject";
 import TaskDetailDrawer from "../../components/taskDetailDrawer";
 import { useHomeStore } from "../../stores";
 
@@ -192,41 +191,47 @@ const HomePage = () => {
     <section className="flex">
       <Sidebar />
       <div className="pt-2 lg:pt-4 w-full overflow-hidden flex flex-col h-[calc(100vh-48px)]">
-        <ProjectHeader project={currentProject} />
-        <Divider className="my-2" />
-        <ProjectSort />
-        <Divider className="mt-2" />
-        <div className="px-4 min-h-0 flex gap-x-4 relative h-full">
-          <DragDropContext onDragEnd={onDragEnd}>
-            {sectionsData?.map((section) => (
-              <div key={section.id} className="mt-2">
-                <Board
-                  key={section.id}
-                  section={section}
-                  projectId={projectId || ""}
-                  onCreateTask={createTask}
-                  onUpdateBoard={updateSection}
-                />
+        {currentProject ? (
+          <>
+            <ProjectHeader project={currentProject} />
+            <Divider className="my-2" />
+            <ProjectSort />
+            <Divider className="mt-2" />
+            <div className="px-4 min-h-0 flex gap-x-4 relative h-full overflow-x-auto custom-scrollbar">
+              <DragDropContext onDragEnd={onDragEnd}>
+                {sectionsData?.map((section) => (
+                  <div key={section.id} className="mt-2">
+                    <Board
+                      key={section.id}
+                      section={section}
+                      projectId={projectId || ""}
+                      onCreateTask={createTask}
+                      onUpdateBoard={updateSection}
+                    />
+                  </div>
+                ))}
+              </DragDropContext>
+              <div className="mt-2">
+                <AddBoard onSubmit={handleSubmit} />
               </div>
-            ))}
-          </DragDropContext>
-          <div className="mt-2">
-            <AddBoard onSubmit={handleSubmit} />
-          </div>
-          <TaskDetailDrawer
-            isOpen={!!selectedTask}
-            onClose={() => setSelectedTask(null)}
-            task={selectedTask}
-            onSubmit={handleUpdateTask}
-            onLikeClick={() => {
-              if (!selectedTask) return;
-              setSelectedTask({
-                ...selectedTask,
-                is_liked: !selectedTask.is_liked,
-              });
-            }}
-          />
-        </div>
+              <TaskDetailDrawer
+                isOpen={!!selectedTask}
+                onClose={() => setSelectedTask(null)}
+                task={selectedTask}
+                onSubmit={handleUpdateTask}
+                onLikeClick={() => {
+                  if (!selectedTask) return;
+                  setSelectedTask({
+                    ...selectedTask,
+                    is_liked: !selectedTask.is_liked,
+                  });
+                }}
+              />
+            </div>
+          </>
+        ) : (
+          <NoProject />
+        )}
       </div>
     </section>
   );

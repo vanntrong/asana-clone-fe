@@ -125,10 +125,10 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
       />
       <div
         className={clsx(
-          "absolute right-0 top-0 h-full dark:bg-task-dark-bg w-[600px] flex justify-between flex-col transition-all duration-500 ease z-20",
+          "fixed right-0 top-0 h-screen dark:bg-task-dark-bg w-[600px] flex justify-between flex-col transition-all duration-500 ease z-50",
           {
-            "translate-x-0": isOpen,
-            "translate-x-full": !isOpen,
+            "translate-x-0 opacity-1 visible": isOpen,
+            "translate-x-full opacity-0 invisible": !isOpen,
           }
         )}
       >

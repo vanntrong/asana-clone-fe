@@ -44,16 +44,6 @@ const Navbar = ({ isAuth }: NavbarProps) => {
   const [isShowAddMemberModal, setIsShowAddMemberModal] =
     useState<boolean>(false);
 
-  const { mutate: createProject, isLoading: isCreatingProject } =
-    useCreateProject({
-      onSuccess(data) {
-        setIsShowAddProjectModal(false);
-        const key = queryKey.myProjects();
-        queryClient.invalidateQueries(key);
-        router.push(`${PATHS.HOME}/?projectId=${data.data.id}`);
-      },
-    });
-
   const { mutate: addMembers, isLoading: isAddingMembers } = useAddMembers({
     onSuccess() {
       setIsShowAddProjectModal(false);
@@ -138,8 +128,6 @@ const Navbar = ({ isAuth }: NavbarProps) => {
       <ModalAddProject
         isOpen={isShowAddProjectModal}
         onOpenChange={(open) => setIsShowAddProjectModal(open)}
-        onSubmit={createProject}
-        isLoading={isCreatingProject}
       />
 
       <ModalAddMembers
