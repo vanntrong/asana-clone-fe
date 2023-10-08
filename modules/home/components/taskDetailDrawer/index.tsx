@@ -9,7 +9,7 @@ import { BsArrowBarRight, BsLink } from "react-icons/bs";
 import { FiCheck } from "react-icons/fi";
 import LabelInput from "./labelInput";
 import DetailDueDate from "./detailDueDate";
-import { Textarea } from "@nextui-org/input";
+import { Textarea } from "@nextui-org/react";
 import Comment from "@/modules/comments/components/comment";
 import { FC, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
@@ -31,6 +31,7 @@ import useGetComments from "@/modules/comments/services/useGetComments";
 import { PaginationParams } from "@/types";
 import useCreateComment from "@/modules/comments/services/useCreateComment";
 import AddComment from "./addComment";
+import { useAuthStore } from "@/stores/global";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
@@ -47,6 +48,8 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   onSubmit: _onSubmit,
   onLikeClick,
 }) => {
+  const { user } = useAuthStore();
+
   const { mutate: likeTask } = useLikeTask({
     onSuccess: () => {
       if (!task) return;
@@ -89,6 +92,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
     }
   );
   const title = watch("title");
+  const description = watch("description");
   const selectedAssigneeId = watch("assignee_id");
 
   const selectedAssignee = data?.data.find(
@@ -253,7 +257,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
         </div>
         <div className="py-3 px-4 border-t border-t-gray-600">
           <div className="flex items-start gap-x-2">
-            <Avatar className="mt-[6px]" />
+            <Avatar className="mt-[6px]" src={user?.avatar} name={user?.name} />
             <AddComment taskId={task?.id} onSubmit={createComment} />
           </div>
         </div>

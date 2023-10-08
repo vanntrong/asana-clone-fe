@@ -8,7 +8,7 @@ import { formatCommentContent } from "@/utils/string";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/button";
 import { Textarea } from "@nextui-org/react";
-import React, { FC, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 interface AddCommentProps {

@@ -12,7 +12,12 @@ interface CommentProps {
 const Comment: FC<CommentProps> = ({ comment }) => {
   return (
     <div className="flex items-start gap-x-2">
-      <Avatar size="sm" className="shrink-0" />
+      <Avatar
+        size="sm"
+        className="shrink-0"
+        src={comment.author?.avatar}
+        name={comment.author?.name}
+      />
       <div className="flex flex-col gap-y-1">
         <div className="flex items-center gap-x-2">
           <h3 className="font-medium">{comment.author.name}</h3>

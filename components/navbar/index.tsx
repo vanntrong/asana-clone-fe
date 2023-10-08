@@ -12,22 +12,18 @@ import {
 import { Logo, MenuIcon, SearchIcon } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 
+import useQueryParams from "@/hooks/useQueryParams";
+import ModalAddMembers from "@/modules/projects/components/modalAddMembers";
+import ModalAddProject from "@/modules/projects/components/modalAddProject";
+import { AddMembersData } from "@/modules/projects/schemas/addMembersSchema";
+import useAddMembers from "@/modules/projects/services/useAddMembers";
 import { useLayoutStore } from "@/stores/global";
 import { Button } from "@nextui-org/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import CreateDropdown from "../createDropdown";
 import MenuDropdown from "../menuDropdown";
-import { useState } from "react";
-import ModalAddProject from "@/modules/projects/components/modalAddProject";
-import useCreateProject from "@/modules/projects/services/useCreateProject";
-import { queryClient } from "@/app/providers";
-import { queryKey } from "@/modules/projects/services/key";
-import { useRouter } from "next/navigation";
-import { PATHS } from "@/configs/path";
-import ModalAddMembers from "@/modules/projects/components/modalAddMembers";
-import useAddMembers from "@/modules/projects/services/useAddMembers";
-import useQueryParams from "@/hooks/useQueryParams";
-import { AddMembersData } from "@/modules/projects/schemas/addMembersSchema";
 
 interface NavbarProps {
   isAuth?: boolean;
@@ -114,14 +110,16 @@ const Navbar = ({ isAuth }: NavbarProps) => {
         </NavbarItem>
       </NavbarContent>
 
-      {searchInput}
+      {!isAuth && searchInput}
 
-      <NavbarContent as="div" justify="end" className="basis-1 pl-4">
-        <MenuDropdown />
-      </NavbarContent>
+      {!isAuth && (
+        <NavbarContent as="div" justify="end" className="basis-1 pl-4">
+          <MenuDropdown />
+        </NavbarContent>
+      )}
 
       <NavbarMenu>
-        {searchInput}
+        {!isAuth && searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2"></div>
       </NavbarMenu>
 
