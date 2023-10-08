@@ -12,10 +12,10 @@ export const setToken = (
   options?: OptionsType
 ) => {
   setCookie(name, value, {
-    httpOnly: process.env.NODE_ENV === "production",
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
+    // httpOnly: process.env.NODE_ENV === "production",
+    // secure: process.env.NODE_ENV === "production",
+    // sameSite: "strict",
+    // path: "/",
     ...options,
   });
 };
