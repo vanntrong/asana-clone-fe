@@ -38,6 +38,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
   });
 
   return (
+    // @ts-ignore
     <Component
       {...getBaseProps({
         className: clsx(
