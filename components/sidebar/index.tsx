@@ -3,7 +3,7 @@
 import { PATHS } from "@/configs/path";
 import useQueryParams from "@/hooks/useQueryParams";
 import { useProjectsStore } from "@/modules/projects/store";
-import { useLayoutStore } from "@/stores/global";
+import { useAuthStore, useLayoutStore } from "@/stores/global";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
 import clsx from "clsx";
 import Link from "next/link";
@@ -11,9 +11,18 @@ import Link from "next/link";
 const Sidebar = () => {
   const { isShowSidebar } = useLayoutStore((state) => state);
   const { projects } = useProjectsStore();
-  const { searchParams } = useQueryParams();
+  const { searchParams, setSearchParams } = useQueryParams();
+  const { user } = useAuthStore();
 
-  const projectId = searchParams.get("projectId");
+  const project_id = searchParams.get("project_id");
+
+  const handleSelectMyTasks = () => {
+    if (!user || !project_id) return;
+    setSearchParams({
+      project_id: project_id,
+      assignee_ids: [user.id],
+    });
+  };
 
   return (
     <div
@@ -28,7 +37,9 @@ const Sidebar = () => {
       <Listbox variant="flat" aria-label="Listbox menu with descriptions">
         <ListboxSection showDivider>
           <ListboxItem key="home">Home</ListboxItem>
-          <ListboxItem key="my-tasks">My tasks</ListboxItem>
+          <ListboxItem key="my-tasks" onClick={handleSelectMyTasks}>
+            My tasks
+          </ListboxItem>
           <ListboxItem key="inbox">Inbox</ListboxItem>
         </ListboxSection>
 
@@ -37,11 +48,11 @@ const Sidebar = () => {
             <ListboxItem
               key={project.id}
               className={clsx({
-                "bg-gray-200 dark:bg-gray-600": projectId === project.id,
+                "bg-gray-200 dark:bg-gray-600": project_id === project.id,
               })}
             >
               <Link
-                href={`${PATHS.HOME}/?projectId=${project.id}`}
+                href={`${PATHS.HOME}/?project_id=${project.id}`}
                 className={clsx("w-full h-full flex items-center")}
               >
                 {project.name}

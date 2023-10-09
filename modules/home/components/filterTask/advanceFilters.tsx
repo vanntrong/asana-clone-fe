@@ -7,27 +7,50 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/dropdown";
-import React, { useMemo } from "react";
+import React, { FC, useMemo } from "react";
 import AdvanceFilterItem from "./advanceFilterItem";
+import useQueryParams from "@/hooks/useQueryParams";
 
-const AdvanceFilters = () => {
+interface AdvanceFiltersProps {
+  handleChangeCount: (count: number) => void;
+}
+
+const AdvanceFilters: FC<AdvanceFiltersProps> = ({ handleChangeCount }) => {
+  const { setSearchParams, resetSearchParams } = useQueryParams();
+
   const [advanceFilterSelected, setAdvanceFilterSelected] = React.useState<
-    Array<string>
+    Array<{
+      key: string;
+      value?: string | string[];
+    }>
   >([]);
 
   const availableAdvanceFilters = useMemo(() => {
     return advanceFilters.filter(
-      (filter) => !advanceFilterSelected.includes(filter.value)
+      (filter) =>
+        advanceFilterSelected.findIndex((item) => item.key === filter.value) ===
+        -1
     );
   }, [advanceFilterSelected]);
+
+  const handleApply = () => {
+    const params = advanceFilterSelected.reduce((prev, curr) => {
+      return {
+        ...prev,
+        [curr.key]: curr.value,
+      };
+    }, {} as any);
+    handleChangeCount(advanceFilterSelected.length);
+    resetSearchParams(params, ["project_id"]);
+  };
 
   return (
     <div>
       {advanceFilterSelected.length > 0 && (
         <div className="mb-3 flex flex-col gap-3">
-          {advanceFilterSelected.map((filter) => {
+          {advanceFilterSelected.map((filter, index) => {
             const filterItem = advanceFilters.find(
-              (item) => item.value === filter
+              (item) => item.value === filter.key
             );
 
             if (!filterItem) return null;
@@ -36,18 +59,29 @@ const AdvanceFilters = () => {
               <AdvanceFilterItem
                 key={filterItem.value}
                 value={filterItem.value}
+                data={filter.value}
                 title={filterItem.title}
                 icon={filterItem.icon}
                 filterOptions={advanceFilters}
                 onChangeFilterType={(value) =>
                   setAdvanceFilterSelected((prev) =>
-                    prev.map((item) => (item === filter ? value : item))
+                    prev.map((item, i) => (index === i ? { key: value } : item))
                   )
                 }
-                onRemoveFilter={(value) =>
+                onRemoveFilter={() =>
                   setAdvanceFilterSelected((prev) =>
-                    prev.filter((item) => item !== value)
+                    prev.filter((_, i) => i !== index)
                   )
+                }
+                onDataChange={(data) =>
+                  setAdvanceFilterSelected((prev) => {
+                    const newFilters = [...prev];
+                    newFilters[index] = {
+                      ...newFilters[index],
+                      value: data,
+                    };
+                    return newFilters;
+                  })
                 }
               />
             );
@@ -71,7 +105,10 @@ const AdvanceFilters = () => {
               key={filter.title}
               startContent={filter.icon}
               onClick={() =>
-                setAdvanceFilterSelected((prev) => [...prev, filter.value])
+                setAdvanceFilterSelected((prev) => [
+                  ...prev,
+                  { key: filter.value },
+                ])
               }
             >
               {filter.title}
@@ -79,6 +116,18 @@ const AdvanceFilters = () => {
           ))}
         </DropdownMenu>
       </Dropdown>
+
+      <div className="flex justify-end">
+        <Button
+          size="sm"
+          radius="sm"
+          color="primary"
+          isDisabled={advanceFilterSelected.length === 0}
+          onClick={handleApply}
+        >
+          <span>Apply</span>
+        </Button>
+      </div>
     </div>
   );
 };

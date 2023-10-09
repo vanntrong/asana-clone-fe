@@ -8,7 +8,7 @@ const useAddMembers = (
   options?: UseMutationOptions<
     unknown,
     AxiosError,
-    AddMembersData & { projectId: string }
+    AddMembersData & { project_id: string }
   >
 ) => {
   const key = queryKey.addMembers();
@@ -16,7 +16,7 @@ const useAddMembers = (
   return useMutation<
     unknown,
     AxiosError,
-    AddMembersData & { projectId: string }
+    AddMembersData & { project_id: string }
   >(key, (payload) => addMembersApi(payload), options);
 };
 

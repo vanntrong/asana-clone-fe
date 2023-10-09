@@ -1,26 +1,33 @@
-import { CheckIcon, CloseIcon } from "@/components/icons";
-import { Button } from "@nextui-org/button";
+import { CloseIcon } from "@/components/icons";
+import useDebounceValue from "@/hooks/useDebounceValue";
+import useQueryParams from "@/hooks/useQueryParams";
 import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@nextui-org/dropdown";
-import { FC } from "react";
-import InputWithSearch from "@/components/inputWithSearch";
-import {
-  AdvanceFilterType,
   AdvanceFilter,
+  AdvanceFilterType,
+  FilterItem,
 } from "@/modules/home/types/homeType";
-import { Select, SelectItem } from "@nextui-org/react";
+import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
+import { User } from "@/modules/users/types";
+import { Button } from "@nextui-org/button";
+import { Input, Select, SelectItem } from "@nextui-org/react";
+import dayjs from "dayjs";
+import { FC, useMemo, useState } from "react";
+import InputWithSearchUser from "../inputWithSearchUser";
 
 interface AdvanceFilterItemProps {
   title: AdvanceFilterType;
-  value: AdvanceFilterType;
+  value: FilterItem;
   icon: React.ReactNode;
   filterOptions: Array<AdvanceFilter>;
-  onChangeFilterType: (value: AdvanceFilterType) => void;
-  onRemoveFilter: (value: AdvanceFilterType) => void;
+  onChangeFilterType: (value: FilterItem) => void;
+  onRemoveFilter: () => void;
+  data?: string | string[];
+  onDataChange: (data: string | string[]) => void;
+}
+
+interface FilterItemProps {
+  data?: string | string[];
+  onDataChange: (data: string | string[]) => void;
 }
 
 const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
@@ -30,13 +37,16 @@ const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
   filterOptions,
   onChangeFilterType,
   onRemoveFilter,
+  ...itemProps
 }) => {
   const filterContents: Record<string, React.ReactNode> = {
-    [AdvanceFilterType.CompletionStatus]: <AdvanceFilterCompletionStatus />,
-    [AdvanceFilterType.Assigned]: <AdvanceFilterPerson />,
-    [AdvanceFilterType.StartDate]: <AdvanceFilterDate />,
-    [AdvanceFilterType.DueDate]: <AdvanceFilterDate />,
-    [AdvanceFilterType.CreatedBy]: <AdvanceFilterPerson />,
+    [FilterItem.CompletionStatus]: (
+      <AdvanceFilterCompletionStatus {...itemProps} />
+    ),
+    [FilterItem.Assigned]: <AdvanceFilterPerson {...itemProps} />,
+    [FilterItem.StartDate]: <AdvanceFilterDate {...itemProps} />,
+    [FilterItem.DueDate]: <AdvanceFilterDate {...itemProps} />,
+    [FilterItem.CreatedBy]: <AdvanceFilterPerson {...itemProps} />,
   };
   return (
     <div className="flex items-center justify-between">
@@ -48,10 +58,11 @@ const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
           startContent={icon}
           selectedKeys={new Set([value])}
           disabledKeys={new Set([value])}
+          renderValue={() => title}
         >
           {filterOptions.map((filter) => (
             <SelectItem
-              key={filter.title}
+              key={filter.value}
               value={filter.value}
               startContent={filter.icon}
               onClick={() => onChangeFilterType(filter.value)}
@@ -70,7 +81,7 @@ const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
           variant="light"
           size="sm"
           className="ml-3"
-          onClick={() => onRemoveFilter(value)}
+          onClick={() => onRemoveFilter()}
         >
           <CloseIcon width={16} height={16} />
         </Button>
@@ -81,24 +92,33 @@ const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
 
 export default AdvanceFilterItem;
 
-const AdvanceFilterCompletionStatus = () => {
+const AdvanceFilterCompletionStatus = (props: FilterItemProps) => {
+  const { data, onDataChange } = props;
+
   const options = [
     {
       title: "Complete",
+      value: "true",
     },
     {
       title: "Incomplete",
+      value: "false",
     },
   ];
+
+  const selectedKeys = typeof data === "string" ? [data] : data;
 
   return (
     <Select
       size={"sm"}
       labelPlacement="outside"
-      defaultSelectedKeys={new Set([options[0].title])}
+      selectedKeys={new Set(selectedKeys)}
+      onChange={(event) => {
+        onDataChange(event.target.value);
+      }}
     >
       {options.map((value) => (
-        <SelectItem key={value.title} value={value.title}>
+        <SelectItem key={value.value} value={value.value}>
           {value.title}
         </SelectItem>
       ))}
@@ -106,46 +126,101 @@ const AdvanceFilterCompletionStatus = () => {
   );
 };
 
-const AdvanceFilterPerson = () => {
+const AdvanceFilterPerson = (props: FilterItemProps) => {
+  const { data, onDataChange } = props;
+
+  const [keyword, setKeyword] = useState<string>("");
+  const keywordDebounce = useDebounceValue(keyword);
+  const { searchParams } = useQueryParams();
+  const project_id = searchParams.get("project_id") || "";
+
+  const { data: members } = useGetProjectMembers({
+    id: project_id,
+    keyword: keywordDebounce,
+  });
+
+  const handleItemClick = (item: User) => {
+    if (!Array.isArray(data) && data !== undefined) {
+      onDataChange(item.id);
+      return;
+    }
+
+    const isExist = data?.includes(item.id);
+    if (isExist) {
+      onDataChange(data?.filter((id) => id !== item.id) || []);
+      return;
+    }
+    onDataChange([...(data || []), item.id]);
+  };
+
+  const userSelected = members?.data
+    ?.filter((item) => data?.includes(item.id))
+    .map((item) => item.name);
+
   return (
-    <InputWithSearch
+    <InputWithSearchUser
       size="sm"
       radius="sm"
       fullWidth
       placeholder="Search people"
+      Component={
+        <Input size="sm" radius="sm" value={userSelected?.join(", ")} />
+      }
+      onItemClick={handleItemClick}
+      data={members?.data}
+      onChange={(e) => setKeyword(e.target.value)}
+      selectedItem={data}
     />
   );
 };
 
-const AdvanceFilterDate = () => {
-  const options = [
-    {
-      title: "Before today",
-    },
-    {
-      title: "Today",
-    },
-    {
-      title: "Tomorrow",
-    },
-    {
-      title: "This week",
-    },
-    {
-      title: "Next week",
-    },
-    {
-      title: "Next 14 days",
-    },
-  ];
+const AdvanceFilterDate = (props: FilterItemProps) => {
+  const { data, onDataChange } = props;
+
+  const options = useMemo(
+    () => [
+      {
+        title: "Before today",
+        value: dayjs().subtract(1, "day").toDate().toLocaleString(),
+      },
+      {
+        title: "Today",
+        value: dayjs().toDate().toLocaleString(),
+      },
+      {
+        title: "Tomorrow",
+        value: dayjs().add(1, "day").toDate().toLocaleString(),
+      },
+      {
+        title: "This week",
+        value: dayjs().weekday(7).toDate().toLocaleString(),
+      },
+      {
+        title: "Next week",
+        value: dayjs().weekday(14).toDate().toLocaleString(),
+      },
+      {
+        title: "Next 14 days",
+        value: dayjs().add(14, "day").toDate().toLocaleString(),
+      },
+    ],
+    []
+  );
+
+  const selected = typeof data === "string" ? [data] : data;
   return (
     <Select
       size={"sm"}
       labelPlacement="outside"
-      defaultSelectedKeys={new Set([options[0].title])}
+      selectedKeys={new Set(selected)}
+      onChange={(e) => onDataChange(e.target.value)}
     >
       {options.map((value) => (
-        <SelectItem key={value.title} value={value.title}>
+        <SelectItem
+          key={value.value}
+          value={value.value}
+          textValue={value.title}
+        >
           {value.title}
         </SelectItem>
       ))}

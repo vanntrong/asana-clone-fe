@@ -33,7 +33,7 @@ const Navbar = ({ isAuth }: NavbarProps) => {
   const { toggleIsShowSidebar } = useLayoutStore((state) => state);
   const router = useRouter();
   const { searchParams } = useQueryParams();
-  const projectId = searchParams.get("projectId");
+  const project_id = searchParams.get("project_id");
   const [isShowAddProjectModal, setIsShowAddProjectModal] =
     useState<boolean>(false);
 
@@ -47,8 +47,8 @@ const Navbar = ({ isAuth }: NavbarProps) => {
   });
 
   const handleAddMembers = (data: AddMembersData) => {
-    if (!projectId) return;
-    addMembers({ ...data, projectId });
+    if (!project_id) return;
+    addMembers({ ...data, project_id });
   };
 
   const searchInput = (
@@ -133,7 +133,7 @@ const Navbar = ({ isAuth }: NavbarProps) => {
         onOpenChange={(open) => setIsShowAddMemberModal(open)}
         onSubmit={handleAddMembers}
         isLoading={isAddingMembers}
-        projectId={projectId as string}
+        project_id={project_id as string}
       />
     </NextUINavbar>
   );

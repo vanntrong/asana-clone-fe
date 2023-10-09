@@ -1,7 +1,6 @@
-import React from "react";
-import { queryKey } from "./key";
 import { GetTasksParams, getTasksApi } from "@/apis/tasks/getTasks";
 import { useQueries } from "@tanstack/react-query";
+import { queryKey } from "./key";
 
 const useGetTasks = (params?: Array<GetTasksParams>) => {
   return useQueries({

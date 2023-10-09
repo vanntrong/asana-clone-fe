@@ -20,23 +20,7 @@ const useLikeTask = (
           section_id: variables.section_id,
           project_id: variables.project_id,
         });
-        queryClient.setQueryData(key, (old: any) => {
-          if (!old) return old;
-
-          old.data = old.data.map((task: Task) =>
-            task.id === variables.task_id
-              ? {
-                  ...task,
-                  is_liked: !task.is_liked,
-                  like_count: task.is_liked
-                    ? task.like_count - 1
-                    : task.like_count + 1,
-                }
-              : task
-          );
-
-          return old;
-        });
+        queryClient.invalidateQueries(key);
         onSuccess?.(data, variables, context);
       },
       ...other,

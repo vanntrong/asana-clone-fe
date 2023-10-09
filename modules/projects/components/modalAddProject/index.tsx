@@ -40,7 +40,7 @@ const ModalAddProject: FC<ModalAddProjectProps> = ({
         onOpenChange(false);
         const key = queryKey.myProjects();
         queryClient.invalidateQueries(key);
-        router.push(`${PATHS.HOME}/?projectId=${data.data.id}`);
+        router.push(`${PATHS.HOME}/?project_id=${data.data.id}`);
       },
     });
   const {

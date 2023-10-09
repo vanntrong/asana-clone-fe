@@ -15,14 +15,15 @@ import { Checkbox, Input } from "@nextui-org/react";
 import React, { FC, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import InputWithSearchUser from "../inputWithSearchUser";
+import dayjs from "dayjs";
 
 interface AddTaskProps {
-  projectId: string;
+  project_id: string;
   sectionId: string;
   onSubmit: (data: CreateTaskPayload) => void;
 }
 
-const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
+const AddTask: FC<AddTaskProps> = ({ project_id, sectionId, onSubmit }) => {
   const [isOpenDatePicker, setIsOpenDatePicker] = useState(false);
   const [isShowAddTask, setIsShowAddTask] = useState(false);
   const { user } = useAuthStore();
@@ -33,7 +34,7 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
   const keywordDebounce = useDebounceValue(keyword);
 
   const { data } = useGetProjectMembers({
-    id: projectId,
+    id: project_id,
     keyword: keywordDebounce,
   });
 
@@ -42,7 +43,7 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
     is_done: false,
     due_date: new Date(),
     start_date: new Date(),
-    project_id: projectId,
+    project_id: project_id,
     section_id: sectionId,
     assignee_id: user?.id,
   };
@@ -64,8 +65,8 @@ const AddTask: FC<AddTaskProps> = ({ projectId, sectionId, onSubmit }) => {
   const dueDate = watch("due_date");
 
   const _onSubmit = (data: CreateTaskPayload) => {
-    data.due_date = data.due_date.toLocaleString();
-    data.start_date = data.start_date?.toLocaleString();
+    data.due_date = dayjs(data.due_date).endOf("day").toDate().toLocaleString();
+    data.start_date = dayjs(data.start_date).toDate().toLocaleString();
     onSubmit(data);
     reset(defaultValues);
   };

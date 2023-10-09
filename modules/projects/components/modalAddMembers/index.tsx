@@ -20,7 +20,7 @@ interface ModalAddMembersProps {
   onOpenChange: (open: boolean) => void;
   isLoading?: boolean;
   onSubmit: (data: AddMembersData) => void;
-  projectId: string;
+  project_id: string;
 }
 
 const ModalAddMembers: FC<ModalAddMembersProps> = ({
@@ -28,7 +28,7 @@ const ModalAddMembers: FC<ModalAddMembersProps> = ({
   onOpenChange,
   isLoading,
   onSubmit,
-  projectId,
+  project_id,
 }) => {
   const {
     control,
@@ -57,7 +57,7 @@ const ModalAddMembers: FC<ModalAddMembersProps> = ({
                     value={value}
                     onChange={onChange}
                     label="Members"
-                    excludeInProject={projectId}
+                    excludeInProject={project_id}
                   />
                 )}
               />

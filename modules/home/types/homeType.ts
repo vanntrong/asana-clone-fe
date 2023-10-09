@@ -6,9 +6,17 @@ export enum AdvanceFilterType {
   CreatedBy = "Created by",
 }
 
+export enum FilterItem {
+  CompletionStatus = "is_done",
+  Assigned = "assignee_ids",
+  StartDate = "start_date",
+  DueDate = "due_date",
+  CreatedBy = "created_by",
+}
+
 export type AdvanceFilter = {
   title: AdvanceFilterType;
-  value: AdvanceFilterType;
+  value: FilterItem;
   icon: React.ReactNode;
 };
 

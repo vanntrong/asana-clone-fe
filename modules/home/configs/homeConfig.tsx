@@ -1,30 +1,35 @@
 import { CheckIcon, PersonIcon, CalendarIcon } from "@/components/icons";
-import { AdvanceFilter, AdvanceFilterType, SortType } from "../types/homeType";
+import {
+  AdvanceFilter,
+  AdvanceFilterType,
+  FilterItem,
+  SortType,
+} from "../types/homeType";
 
 export const advanceFilters: Array<AdvanceFilter> = [
   {
     title: AdvanceFilterType.CompletionStatus,
-    value: AdvanceFilterType.CompletionStatus,
+    value: FilterItem.CompletionStatus,
     icon: <CheckIcon size={14} />,
   },
   {
     title: AdvanceFilterType.Assigned,
-    value: AdvanceFilterType.Assigned,
+    value: FilterItem.Assigned,
     icon: <PersonIcon size={14} />,
   },
   {
     title: AdvanceFilterType.StartDate,
-    value: AdvanceFilterType.StartDate,
+    value: FilterItem.StartDate,
     icon: <CalendarIcon size={14} />,
   },
   {
     title: AdvanceFilterType.DueDate,
-    value: AdvanceFilterType.DueDate,
+    value: FilterItem.DueDate,
     icon: <CalendarIcon size={14} />,
   },
   {
     title: AdvanceFilterType.CreatedBy,
-    value: AdvanceFilterType.CreatedBy,
+    value: FilterItem.CreatedBy,
     icon: <PersonIcon size={14} />,
   },
 ];

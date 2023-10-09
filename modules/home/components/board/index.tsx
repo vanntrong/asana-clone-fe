@@ -18,14 +18,14 @@ import Task from "../task";
 
 interface BoardProps {
   section: Section;
-  projectId: string;
+  project_id: string;
   onCreateTask: (data: CreateTaskPayload) => void;
   onUpdateBoard: (data: Section) => void;
 }
 
 const Board: FC<BoardProps> = ({
   section,
-  projectId,
+  project_id,
   onCreateTask,
   onUpdateBoard,
 }) => {
@@ -35,7 +35,7 @@ const Board: FC<BoardProps> = ({
 
   const handleLikeClick = (taskId: string) => {
     likeTask({
-      project_id: projectId,
+      project_id: project_id,
       task_id: taskId,
       section_id: section.id,
     });
@@ -100,7 +100,7 @@ const Board: FC<BoardProps> = ({
           </Droppable>
           <AddTask
             sectionId={section.id}
-            projectId={projectId}
+            project_id={project_id}
             onSubmit={onCreateTask}
           />
         </div>
