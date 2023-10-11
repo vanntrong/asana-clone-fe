@@ -1,5 +1,7 @@
 import { PlusIcon } from "@/components/icons";
+import useQueryParams from "@/hooks/useQueryParams";
 import { advanceFilters } from "@/modules/home/configs/homeConfig";
+import { useFilterTaskContext } from "@/modules/home/contexts/filterTaskContext";
 import { Button } from "@nextui-org/button";
 import {
   Dropdown,
@@ -7,23 +9,17 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/dropdown";
-import React, { FC, useMemo } from "react";
+import { FC, useMemo } from "react";
 import AdvanceFilterItem from "./advanceFilterItem";
-import useQueryParams from "@/hooks/useQueryParams";
+import { FilterParamKeys } from "../../types/homeType";
 
-interface AdvanceFiltersProps {
-  handleChangeCount: (count: number) => void;
-}
+interface AdvanceFiltersProps {}
 
-const AdvanceFilters: FC<AdvanceFiltersProps> = ({ handleChangeCount }) => {
-  const { setSearchParams, resetSearchParams } = useQueryParams();
+const AdvanceFilters: FC<AdvanceFiltersProps> = ({}) => {
+  const { resetSearchParams } = useQueryParams();
 
-  const [advanceFilterSelected, setAdvanceFilterSelected] = React.useState<
-    Array<{
-      key: string;
-      value?: string | string[];
-    }>
-  >([]);
+  const { advanceFilterSelected = [], setAdvanceFilterSelected } =
+    useFilterTaskContext();
 
   const availableAdvanceFilters = useMemo(() => {
     return advanceFilters.filter(
@@ -40,8 +36,7 @@ const AdvanceFilters: FC<AdvanceFiltersProps> = ({ handleChangeCount }) => {
         [curr.key]: curr.value,
       };
     }, {} as any);
-    handleChangeCount(advanceFilterSelected.length);
-    resetSearchParams(params, ["project_id"]);
+    resetSearchParams(params, [FilterParamKeys.PROJECT_ID]);
   };
 
   return (
@@ -64,17 +59,17 @@ const AdvanceFilters: FC<AdvanceFiltersProps> = ({ handleChangeCount }) => {
                 icon={filterItem.icon}
                 filterOptions={advanceFilters}
                 onChangeFilterType={(value) =>
-                  setAdvanceFilterSelected((prev) =>
+                  setAdvanceFilterSelected?.((prev) =>
                     prev.map((item, i) => (index === i ? { key: value } : item))
                   )
                 }
                 onRemoveFilter={() =>
-                  setAdvanceFilterSelected((prev) =>
+                  setAdvanceFilterSelected?.((prev) =>
                     prev.filter((_, i) => i !== index)
                   )
                 }
                 onDataChange={(data) =>
-                  setAdvanceFilterSelected((prev) => {
+                  setAdvanceFilterSelected?.((prev) => {
                     const newFilters = [...prev];
                     newFilters[index] = {
                       ...newFilters[index],
@@ -105,7 +100,7 @@ const AdvanceFilters: FC<AdvanceFiltersProps> = ({ handleChangeCount }) => {
               key={filter.title}
               startContent={filter.icon}
               onClick={() =>
-                setAdvanceFilterSelected((prev) => [
+                setAdvanceFilterSelected?.((prev) => [
                   ...prev,
                   { key: filter.value },
                 ])

@@ -17,6 +17,10 @@ import { useEffect, useMemo, useState } from "react";
 import TaskFilterPopover from "../TaskFilterPopover";
 import AdvanceFilters from "./advanceFilters";
 import FilterItem, { FilterItemProps } from "./filterItem";
+import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
+import { useFilterTaskContext } from "@/modules/home/contexts/filterTaskContext";
+import { omit } from "lodash";
+import { FilterParamKeys } from "../../types/homeType";
 dayjs.extend(weekday);
 
 const FilterTask = () => {
@@ -27,8 +31,7 @@ const FilterTask = () => {
     resetSearchParams,
   } = useQueryParams();
   const { user } = useAuthStore();
-  const [isAdvancedFilter, setIsAdvancedFilter] = useState<boolean>(false);
-  const [appliedFiltersCount, setAppliedFiltersCount] = useState<number>(0);
+  const { isAdvancedFilter, setIsAdvancedFilter } = useFilterTaskContext();
 
   const filters: Array<FilterItemProps> = useMemo(
     () => [
@@ -60,7 +63,7 @@ const FilterTask = () => {
           <CalendarIcon size={14} className="dark:text-gray-500 text-black" />
         ),
         key: "due_date",
-        value: dayjs().weekday(7).endOf("day").toDate().toLocaleString(),
+        value: formatTimeToString(timeToEndOfDay(dayjs().weekday(7).toDate())),
       },
       {
         title: "Due next week",
@@ -68,20 +71,20 @@ const FilterTask = () => {
           <CalendarIcon size={14} className="dark:text-gray-500 text-black" />
         ),
         key: "due_date",
-        value: dayjs().weekday(14).endOf("day").toDate().toLocaleString(),
+        value: formatTimeToString(timeToEndOfDay(dayjs().weekday(14).toDate())),
       },
     ],
     [user]
   );
 
-  useEffect(() => {
-    setAppliedFiltersCount(searchParams.size - 1);
-  }, [searchParams]);
-
   const toggleAdvancedFilter = () => {
-    setIsAdvancedFilter((prev) => !prev);
-    setAppliedFiltersCount(0);
-    resetSearchParams({}, ["project_id"]);
+    resetSearchParams(
+      {
+        [FilterParamKeys.IS_ADVANCE_FILTER]: `${!isAdvancedFilter}`,
+      },
+      [FilterParamKeys.PROJECT_ID, FilterParamKeys.IS_ADVANCE_FILTER]
+    );
+    setIsAdvancedFilter?.((prev) => !prev);
   };
 
   const handleBasicFilter = (filter: FilterItemProps) => {
@@ -107,8 +110,18 @@ const FilterTask = () => {
   const handleClear = () => {
     const removeFields = filters.map((filter) => filter.key);
     removeSearchParams(removeFields);
-    setAppliedFiltersCount(0);
   };
+
+  const searchParamsSize = useMemo(() => {
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+
+    return Object.keys(
+      omit(searchParamsObject, [
+        FilterParamKeys.PROJECT_ID,
+        FilterParamKeys.IS_ADVANCE_FILTER,
+      ])
+    ).length;
+  }, [searchParams]);
 
   return (
     <TaskFilterPopover
@@ -122,13 +135,13 @@ const FilterTask = () => {
         </Button>
       }
       title="Filter"
-      count={appliedFiltersCount}
+      count={searchParamsSize}
       onClear={handleClear}
       // isOpen
     >
       {isAdvancedFilter ? (
         <div className="mt-3">
-          <AdvanceFilters handleChangeCount={setAppliedFiltersCount} />
+          <AdvanceFilters />
         </div>
       ) : (
         <div className="mt-3 flex flex-wrap gap-3">

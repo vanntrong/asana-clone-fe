@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import CreateDropdown from "../createDropdown";
 import MenuDropdown from "../menuDropdown";
+import { FilterParamKeys } from "@/modules/home/types/homeType";
 
 interface NavbarProps {
   isAuth?: boolean;
@@ -33,7 +34,7 @@ const Navbar = ({ isAuth }: NavbarProps) => {
   const { toggleIsShowSidebar } = useLayoutStore((state) => state);
   const router = useRouter();
   const { searchParams } = useQueryParams();
-  const project_id = searchParams.get("project_id");
+  const project_id = searchParams.get(FilterParamKeys.PROJECT_ID);
   const [isShowAddProjectModal, setIsShowAddProjectModal] =
     useState<boolean>(false);
 

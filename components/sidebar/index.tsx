@@ -2,6 +2,7 @@
 
 import { PATHS } from "@/configs/path";
 import useQueryParams from "@/hooks/useQueryParams";
+import { FilterParamKeys } from "@/modules/home/types/homeType";
 import { useProjectsStore } from "@/modules/projects/store";
 import { useAuthStore, useLayoutStore } from "@/stores/global";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/react";
@@ -14,7 +15,7 @@ const Sidebar = () => {
   const { searchParams, setSearchParams } = useQueryParams();
   const { user } = useAuthStore();
 
-  const project_id = searchParams.get("project_id");
+  const project_id = searchParams.get(FilterParamKeys.PROJECT_ID);
 
   const handleSelectMyTasks = () => {
     if (!user || !project_id) return;

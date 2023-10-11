@@ -5,6 +5,7 @@ import {
   AdvanceFilter,
   AdvanceFilterType,
   FilterItem,
+  FilterParamKeys,
 } from "@/modules/home/types/homeType";
 import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
 import { User } from "@/modules/users/types";
@@ -13,6 +14,11 @@ import { Input, Select, SelectItem } from "@nextui-org/react";
 import dayjs from "dayjs";
 import { FC, useMemo, useState } from "react";
 import InputWithSearchUser from "../inputWithSearchUser";
+import {
+  formatTimeToString,
+  timeToEndOfDay,
+  timeToStartOfDay,
+} from "@/utils/time";
 
 interface AdvanceFilterItemProps {
   title: AdvanceFilterType;
@@ -44,8 +50,10 @@ const AdvanceFilterItem: FC<AdvanceFilterItemProps> = ({
       <AdvanceFilterCompletionStatus {...itemProps} />
     ),
     [FilterItem.Assigned]: <AdvanceFilterPerson {...itemProps} />,
-    [FilterItem.StartDate]: <AdvanceFilterDate {...itemProps} />,
-    [FilterItem.DueDate]: <AdvanceFilterDate {...itemProps} />,
+    [FilterItem.StartDate]: (
+      <AdvanceFilterDate {...itemProps} type="start_date" />
+    ),
+    [FilterItem.DueDate]: <AdvanceFilterDate {...itemProps} type="due_date" />,
     [FilterItem.CreatedBy]: <AdvanceFilterPerson {...itemProps} />,
   };
   return (
@@ -132,7 +140,7 @@ const AdvanceFilterPerson = (props: FilterItemProps) => {
   const [keyword, setKeyword] = useState<string>("");
   const keywordDebounce = useDebounceValue(keyword);
   const { searchParams } = useQueryParams();
-  const project_id = searchParams.get("project_id") || "";
+  const project_id = searchParams.get(FilterParamKeys.PROJECT_ID) || "";
 
   const { data: members } = useGetProjectMembers({
     id: project_id,
@@ -174,38 +182,43 @@ const AdvanceFilterPerson = (props: FilterItemProps) => {
   );
 };
 
-const AdvanceFilterDate = (props: FilterItemProps) => {
-  const { data, onDataChange } = props;
+const AdvanceFilterDate = (
+  props: FilterItemProps & { type: "start_date" | "due_date" }
+) => {
+  const { data, onDataChange, type } = props;
 
-  const options = useMemo(
-    () => [
+  const options = useMemo(() => {
+    const formatter = type === "start_date" ? timeToStartOfDay : timeToEndOfDay;
+
+    return [
       {
         title: "Before today",
-        value: dayjs().subtract(1, "day").toDate().toLocaleString(),
+        value: formatTimeToString(
+          formatter(dayjs().subtract(1, "day").toDate())
+        ),
       },
       {
         title: "Today",
-        value: dayjs().toDate().toLocaleString(),
+        value: formatTimeToString(formatter(dayjs().toDate())),
       },
       {
         title: "Tomorrow",
-        value: dayjs().add(1, "day").toDate().toLocaleString(),
+        value: formatTimeToString(formatter(dayjs().add(1, "day").toDate())),
       },
       {
         title: "This week",
-        value: dayjs().weekday(7).toDate().toLocaleString(),
+        value: formatTimeToString(formatter(dayjs().weekday(7).toDate())),
       },
       {
         title: "Next week",
-        value: dayjs().weekday(14).toDate().toLocaleString(),
+        value: formatTimeToString(formatter(dayjs().weekday(14).toDate())),
       },
       {
         title: "Next 14 days",
-        value: dayjs().add(14, "day").toDate().toLocaleString(),
+        value: formatTimeToString(formatter(dayjs().add(14, "day").toDate())),
       },
-    ],
-    []
-  );
+    ];
+  }, [type]);
 
   const selected = typeof data === "string" ? [data] : data;
   return (

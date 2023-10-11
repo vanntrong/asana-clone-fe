@@ -32,6 +32,7 @@ import { PaginationParams } from "@/types";
 import useCreateComment from "@/modules/comments/services/useCreateComment";
 import AddComment from "./addComment";
 import { useAuthStore } from "@/stores/global";
+import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
@@ -104,8 +105,8 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   const onSubmit = (data: UpdateTaskPayload) => {
     _onSubmit?.({
       ...data,
-      start_date: new Date(data.start_date || "").toLocaleString(),
-      due_date: new Date(data.due_date || "").toLocaleString(),
+      start_date: formatTimeToString(data.start_date),
+      due_date: formatTimeToString(timeToEndOfDay(data.due_date)),
     });
   };
 

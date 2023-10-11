@@ -9,13 +9,13 @@ import {
   createTaskSchema,
 } from "@/modules/tasks/schemas/createTaskSchema";
 import { useAuthStore } from "@/stores/global";
+import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/button";
 import { Checkbox, Input } from "@nextui-org/react";
 import React, { FC, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import InputWithSearchUser from "../inputWithSearchUser";
-import dayjs from "dayjs";
 
 interface AddTaskProps {
   project_id: string;
@@ -63,10 +63,10 @@ const AddTask: FC<AddTaskProps> = ({ project_id, sectionId, onSubmit }) => {
 
   const startDate = watch("start_date");
   const dueDate = watch("due_date");
-
   const _onSubmit = (data: CreateTaskPayload) => {
-    data.due_date = dayjs(data.due_date).endOf("day").toDate().toLocaleString();
-    data.start_date = dayjs(data.start_date).toDate().toLocaleString();
+    data.due_date = formatTimeToString(timeToEndOfDay(data.due_date));
+
+    data.start_date = formatTimeToString(data.start_date);
     onSubmit(data);
     reset(defaultValues);
   };

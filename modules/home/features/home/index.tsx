@@ -25,10 +25,11 @@ import { toBoolean } from "@/utils/converter";
 import { Divider } from "@nextui-org/divider";
 import { useCallback, useMemo } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { FilterParamKeys } from "../../types/homeType";
 
 const HomePage = () => {
   const { searchParams } = useQueryParams();
-  const project_id = searchParams.get("project_id");
+  const project_id = searchParams.get(FilterParamKeys.PROJECT_ID);
   const assignee_ids = searchParams.getAll("assignee_ids");
   const is_done = searchParams.get("is_done");
   const due_date = searchParams.get("due_date");

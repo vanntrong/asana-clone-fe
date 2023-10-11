@@ -20,6 +20,11 @@ export type AdvanceFilter = {
   icon: React.ReactNode;
 };
 
+export type AdvanceFilterSelected = {
+  key: string;
+  value?: string | string[];
+};
+
 export enum SortType {
   StartDate = "Start date",
   DueDate = "Due date",
@@ -28,3 +33,15 @@ export enum SortType {
   Likes = "Likes",
   Alphabetical = "Alphabetical",
 }
+
+export const FilterParamKeys = {
+  PROJECT_ID: "project_id",
+  IS_DONE: "is_done",
+  ASSIGNEE_IDS: "assignee_ids",
+  START_DATE: "start_date",
+  DUE_DATE: "due_date",
+  CREATED_BY: "created_by",
+  SORT_BY: "sort_by",
+  SORT_ORDER: "sort_order",
+  IS_ADVANCE_FILTER: "is_advanced_filter",
+};

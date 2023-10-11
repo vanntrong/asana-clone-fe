@@ -38,7 +38,11 @@ const useQueryParams = () => {
 
   const reset = useCallback(
     (params: Record<string, string | string[]> = {}, keep: string[] = []) => {
-      current.forEach((_, key) => !keep.includes(key) && current.delete(key));
+      const currentObject = Object.fromEntries(current.entries());
+      for (const key in currentObject) {
+        if (!keep.includes(key)) current.delete(key);
+      }
+
       set(params);
     },
     [current, set]
