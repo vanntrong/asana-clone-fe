@@ -27,7 +27,6 @@ const CreateDropdown: FC<CreateDropdownProps> = ({
         </Button>
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions">
-        <DropdownItem key="task">Task</DropdownItem>
         <DropdownItem key="project" onClick={onClickAddProject}>
           Project
         </DropdownItem>

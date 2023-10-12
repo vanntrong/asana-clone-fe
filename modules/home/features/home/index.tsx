@@ -26,6 +26,7 @@ import { Divider } from "@nextui-org/divider";
 import { useCallback, useMemo } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { FilterParamKeys } from "../../types/homeType";
+import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
 
 const HomePage = () => {
   const { searchParams } = useQueryParams();
@@ -48,6 +49,15 @@ const HomePage = () => {
   const currentProject = useMemo(
     () => projects.find((project) => project.id === project_id),
     [projects, project_id]
+  );
+
+  const { data: members } = useGetProjectMembers(
+    {
+      id: project_id || "",
+    },
+    {
+      enabled: !!project_id,
+    }
   );
 
   const { data: sections } = useGetSections(
@@ -213,7 +223,7 @@ const HomePage = () => {
       <div className="pt-2 lg:pt-4 w-full overflow-hidden flex flex-col h-[calc(100vh-48px)]">
         {currentProject ? (
           <>
-            <ProjectHeader project={currentProject} />
+            <ProjectHeader project={currentProject} members={members} />
             <Divider className="my-2" />
             <ProjectSort />
             <Divider className="mt-2" />

@@ -33,6 +33,7 @@ import useCreateComment from "@/modules/comments/services/useCreateComment";
 import AddComment from "./addComment";
 import { useAuthStore } from "@/stores/global";
 import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
+import { User } from "@/modules/users/types";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
@@ -92,13 +93,10 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
       enabled: !!task?.project_id,
     }
   );
-  const title = watch("title");
-  const description = watch("description");
-  const selectedAssigneeId = watch("assignee_id");
 
-  const selectedAssignee = data?.data.find(
-    (item) => item.id === selectedAssigneeId
-  );
+  const [selectedAssignee, setSelectedAssignee] = useState<User | undefined>();
+  const title = watch("title");
+  const selectedAssigneeId = watch("assignee_id");
 
   useUpdateFormValues(setValue, task);
 
@@ -118,6 +116,23 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
       section_id: task.section_id,
     });
   };
+
+  useEffect(() => {
+    if (selectedAssigneeId) {
+      const assignee = data?.data?.find(
+        (item) => item.id === selectedAssigneeId
+      );
+
+      if (assignee) {
+        setSelectedAssignee(assignee);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAssigneeId]);
+
+  useEffect(() => {
+    setSelectedAssignee(task?.assignee);
+  }, [task]);
 
   return (
     <>
@@ -192,6 +207,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
                       onItemClick={(item) => onChange(item.id)}
                       selectedItem={value}
                       data={data?.data}
+                      onChange={(e) => setKeyword(e.target.value)}
                       Component={
                         <Button
                           size="sm"

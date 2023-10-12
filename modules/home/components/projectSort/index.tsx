@@ -13,15 +13,15 @@ const ProjectSort = () => {
           <FilterTask />
         </FilterTaskProvider>
         <Spacer x={2} />
-        <SortTask />
+        {/* <SortTask /> */}
         <Spacer x={2} />
-        <Button
+        {/* <Button
           size="sm"
           variant="light"
           startContent={<EyeFilledIcon size={14} />}
         >
           Hide
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
