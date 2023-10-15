@@ -13,7 +13,7 @@ import dayjs from "dayjs";
  */
 export const formatTimeToString = (
   date?: string | Date,
-  format = "DD/MM/YYYY, h:mm:ss A"
+  format = "DD/MM/YYYY, hh:mm:ss A"
 ) => {
   return dayjs(date).format(format);
 };

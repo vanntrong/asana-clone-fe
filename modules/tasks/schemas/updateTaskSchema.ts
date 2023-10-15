@@ -9,7 +9,7 @@ export const updateTaskSchema = z.object({
   project_id: z.string().uuid().optional(),
   section_id: z.string().uuid().optional(),
   is_done: z.boolean().optional(),
-  tags: z.string().optional(),
+  tags: z.array(z.string().uuid()).optional(),
   parent_task_id: z.string().uuid().optional().nullable(),
 });
 

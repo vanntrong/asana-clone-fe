@@ -36,6 +36,7 @@ export enum SortType {
 
 export const FilterParamKeys = {
   PROJECT_ID: "project_id",
+  TASK_ID: "task_id",
   IS_DONE: "is_done",
   ASSIGNEE_IDS: "assignee_ids",
   START_DATE: "start_date",

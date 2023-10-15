@@ -23,7 +23,7 @@ import useUpdateOrderTasks from "@/modules/tasks/services/useUpdateOrderTasks";
 import useUpdateTask from "@/modules/tasks/services/useUpdateTask";
 import { toBoolean } from "@/utils/converter";
 import { Divider } from "@nextui-org/divider";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { FilterParamKeys } from "../../types/homeType";
 import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
@@ -216,6 +216,19 @@ const HomePage = () => {
     },
     [project_id, sectionsData, updateOrderTask, query]
   );
+
+  useEffect(() => {
+    const taskId = searchParams.get(FilterParamKeys.TASK_ID);
+    if (!taskId || !tasks || selectedTask) return;
+
+    const taskFounded = tasks
+      .flatMap((task) => task.data?.data)
+      .find((task) => task?.id === taskId);
+
+    if (!taskFounded) return;
+    setSelectedTask(taskFounded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks, selectedTask, searchParams]);
 
   return (
     <section className="flex">

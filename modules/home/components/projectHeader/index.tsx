@@ -3,6 +3,7 @@ import InlineInput from "@/components/inlineInput";
 import { Project } from "@/modules/projects/types";
 import { User } from "@/modules/users/types";
 import { Avatar, AvatarGroup } from "@nextui-org/avatar";
+import { Tooltip } from "@nextui-org/react";
 import React, { FC } from "react";
 
 interface ProjectHeaderProps {
@@ -28,14 +29,12 @@ const ProjectHeader: FC<ProjectHeaderProps> = ({ project, members }) => {
           max={3}
           total={(members?.pagination.total || 3) - 3}
           size="sm"
+          className="justify-start"
         >
           {members?.data?.map((member) => (
-            <Avatar
-              src={member.avatar}
-              key={member.id}
-              name={member.name}
-              size="sm"
-            />
+            <Tooltip key={member.id} content={member.name}>
+              <Avatar src={member.avatar} name={member.name} size="sm" />
+            </Tooltip>
           ))}
         </AvatarGroup>
       </div>

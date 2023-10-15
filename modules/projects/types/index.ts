@@ -1,3 +1,4 @@
+import { Tag } from "@/modules/tags/types";
 import { User } from "@/modules/users/types";
 
 export type Project = {
@@ -18,7 +19,7 @@ export type Task = {
   start_date: string;
   due_date: string;
   is_done: false;
-  tags: string;
+  tags: Tag[];
   assignee_id: string;
   project_id: string;
   created_by_id: string;

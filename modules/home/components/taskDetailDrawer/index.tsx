@@ -3,7 +3,7 @@
 import { LikeFilledIcon, LikeIcon } from "@/components/icons/like";
 import InputWithSearch from "@/components/inputWithSearch";
 import { Button } from "@nextui-org/button";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Tooltip } from "@nextui-org/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsArrowBarRight, BsLink } from "react-icons/bs";
 import { FiCheck } from "react-icons/fi";
@@ -34,6 +34,10 @@ import AddComment from "./addComment";
 import { useAuthStore } from "@/stores/global";
 import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
 import { User } from "@/modules/users/types";
+import { usePathname } from "next/navigation";
+import useQueryParams from "@/hooks/useQueryParams";
+import { getTaskLink } from "../../utils";
+import DetailTags from "./detailTags";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
@@ -50,6 +54,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   onSubmit: _onSubmit,
   onLikeClick,
 }) => {
+  const { searchParams } = useQueryParams();
   const { user } = useAuthStore();
 
   const { mutate: likeTask } = useLikeTask({
@@ -60,6 +65,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   });
 
   const [query, setQuery] = useState<PaginationParams>({});
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const getCommentsParams: GetCommentsParams = useMemo(
     () => ({
@@ -75,12 +81,17 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
 
   const { mutate: createComment } = useCreateComment();
 
+  const taskValues = useMemo(() => {
+    return {
+      ...task,
+      tags: task?.tags?.map((tag) => tag.id),
+    };
+  }, [task]);
+
   const { register, handleSubmit, setValue, watch, control } =
     useForm<UpdateTaskPayload>({
       resolver: zodResolver(updateTaskSchema),
-      defaultValues: {
-        ...task,
-      },
+      defaultValues: taskValues,
     });
   const [keyword, setKeyword] = useState<string>("");
   const keywordDebounce = useDebounceValue(keyword);
@@ -98,7 +109,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   const title = watch("title");
   const selectedAssigneeId = watch("assignee_id");
 
-  useUpdateFormValues(setValue, task);
+  useUpdateFormValues(setValue, taskValues);
 
   const onSubmit = (data: UpdateTaskPayload) => {
     _onSubmit?.({
@@ -117,6 +128,14 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
     });
   };
 
+  const handleCopyTaskLink = () => {
+    if (!task) return;
+    const filter = getTaskLink(searchParams, task);
+    const url = `${window.location.origin}${window.location.pathname}?${filter}`;
+    navigator.clipboard.writeText(url);
+    setIsCopied(true);
+  };
+
   useEffect(() => {
     if (selectedAssigneeId) {
       const assignee = data?.data?.find(
@@ -133,6 +152,18 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   useEffect(() => {
     setSelectedAssignee(task?.assignee);
   }, [task]);
+
+  useEffect(() => {
+    if (!isCopied) return;
+
+    const timer = setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isCopied]);
 
   return (
     <>
@@ -171,9 +202,17 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
                   <LikeIcon size={16} />
                 )}
               </Button>
-              <Button size="sm" radius="sm" isIconOnly variant="light">
-                <BsLink size={18} />
-              </Button>
+              <Tooltip content={isCopied ? "Copied" : "Copy to clipboard"}>
+                <Button
+                  size="sm"
+                  radius="sm"
+                  isIconOnly
+                  variant="light"
+                  onClick={handleCopyTaskLink}
+                >
+                  <BsLink size={18} />
+                </Button>
+              </Tooltip>
               <Button size="sm" radius="sm" isIconOnly variant="light">
                 <AiOutlineDelete size={18} />
               </Button>
@@ -234,8 +273,22 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
                 <Controller
                   control={control}
                   name="due_date"
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
+                  render={({ field: { onChange, value } }) => (
                     <DetailDueDate dueDate={value} onChange={onChange} />
+                  )}
+                />
+              </LabelInput>
+
+              <LabelInput label="Tags">
+                <Controller
+                  control={control}
+                  name="tags"
+                  render={({ field: { value, onChange } }) => (
+                    <DetailTags
+                      value={value}
+                      onChange={onChange}
+                      projectId={task?.project_id || ""}
+                    />
                   )}
                 />
               </LabelInput>
