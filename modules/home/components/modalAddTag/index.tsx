@@ -38,6 +38,7 @@ const ModalAddTag: FC<ModalAddTagProps> = ({
     setValue,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<AddTagSchema>({
     resolver: zodResolver(addTagSchema),
@@ -56,6 +57,12 @@ const ModalAddTag: FC<ModalAddTagProps> = ({
 
   const onSubmit = (data: AddTagSchema) => {
     mutate(data);
+    reset({
+      name: "",
+      color: "#ffffff",
+      project_id: projectId,
+    });
+    onOpenChange(false);
   };
 
   return (

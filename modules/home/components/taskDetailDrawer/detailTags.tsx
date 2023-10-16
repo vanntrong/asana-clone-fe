@@ -6,24 +6,6 @@ import { Chip, Select, SelectItem, SelectedItems } from "@nextui-org/react";
 import { FC, useCallback, useState } from "react";
 import ModalAddTag from "../modalAddTag";
 
-const tags = [
-  {
-    id: "1",
-    name: "tag1",
-    color: "red",
-  },
-  {
-    id: "2",
-    name: "tag2",
-    color: "blue",
-  },
-  {
-    id: "3",
-    name: "tag3",
-    color: "green",
-  },
-];
-
 interface DetailTagsProps {
   value?: string[];
   onChange?: (value: string[]) => void;

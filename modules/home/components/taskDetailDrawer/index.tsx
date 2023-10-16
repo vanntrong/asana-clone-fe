@@ -84,7 +84,7 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
   const taskValues = useMemo(() => {
     return {
       ...task,
-      tags: task?.tags?.map((tag) => tag.id),
+      tags: task?.tags_list?.map((tag) => tag.id),
     };
   }, [task]);
 

@@ -19,7 +19,8 @@ export type Task = {
   start_date: string;
   due_date: string;
   is_done: false;
-  tags: Tag[];
+  tags: string[];
+  tags_list: Tag[];
   assignee_id: string;
   project_id: string;
   created_by_id: string;
