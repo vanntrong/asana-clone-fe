@@ -193,14 +193,24 @@ const HomePage = () => {
         if (!old) return old;
         return {
           ...old,
-          data: [...newSourceTasks],
+          data: [
+            ...newSourceTasks.map((task) => ({
+              ...task,
+              section_id: sourceSection.id,
+            })),
+          ],
         };
       });
       queryClient.setQueryData(descKey, (old: any) => {
         if (!old) return old;
         return {
           ...old,
-          data: [...newDescTasks],
+          data: [
+            ...newDescTasks.map((task) => ({
+              ...task,
+              section_id: descSection.id,
+            })),
+          ],
         };
       });
       updateOrderTask({
