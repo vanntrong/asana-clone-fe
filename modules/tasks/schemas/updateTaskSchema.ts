@@ -7,7 +7,6 @@ export const updateTaskSchema = z.object({
   due_date: z.date().or(z.string()).optional(),
   assignee_id: z.string().uuid().optional(),
   project_id: z.string().uuid().optional(),
-  section_id: z.string().uuid().optional(),
   is_done: z.boolean().optional(),
   tags: z.array(z.string().uuid()).optional(),
   parent_task_id: z.string().uuid().optional().nullable(),
