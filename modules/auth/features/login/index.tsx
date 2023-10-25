@@ -14,6 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import useLoginGoogle from "../../services/useLoginGoogle";
+import Link from "next/link";
 
 const LoginPage = () => {
   const {
@@ -24,12 +25,14 @@ const LoginPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const nextUrl = searchParams.get("nextUrl") || PATHS.HOME;
+
   const { mutate: login, isLoading: isLoginLoading } = useLogin({
     onSuccess: (d) => {
       const { access_token, refresh_token } = d.data;
       setToken(TokenName.ACCESS_TOKEN, access_token);
       setToken(TokenName.REFRESH_TOKEN, refresh_token);
-      router.push(searchParams.get("nextUrl") || PATHS.HOME);
+      router.push(nextUrl);
     },
   });
 
@@ -39,7 +42,7 @@ const LoginPage = () => {
         const { access_token, refresh_token } = d.data;
         setToken(TokenName.ACCESS_TOKEN, access_token);
         setToken(TokenName.REFRESH_TOKEN, refresh_token);
-        router.push(searchParams.get("nextUrl") || PATHS.HOME);
+        router.push(nextUrl);
       },
     });
 
@@ -96,6 +99,18 @@ const LoginPage = () => {
               isLoading={isCheckEmailLoading}
             />
           )}
+
+          <Divider className="my-4" title="or" />
+
+          <p className="text-center text-slate-500 text-sm">
+            Don&apos;t have an account?{" "}
+            <Link
+              href={`${PATHS.REGISTER}?nextUrl=${nextUrl}`}
+              className="w-full mt-2 text-primary hover:underline"
+            >
+              <span>Sign Up</span>
+            </Link>
+          </p>
         </div>
       </div>
     </section>

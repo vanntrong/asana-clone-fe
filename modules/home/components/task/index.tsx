@@ -1,14 +1,14 @@
-import { Chip } from "@nextui-org/chip";
-import { Avatar } from "@nextui-org/avatar";
-import React, { FC } from "react";
-import { Button } from "@nextui-org/button";
-import { LikeFilledIcon, LikeIcon } from "@/components/icons/like";
 import { CommentIcon } from "@/components/icons";
-import { Tooltip } from "@nextui-org/tooltip";
+import { LikeFilledIcon, LikeIcon } from "@/components/icons/like";
 import InlineInput from "@/components/inlineInput";
 import { Task, Task as TaskType } from "@/modules/projects/types";
-import dayjs from "dayjs";
+import { Avatar } from "@nextui-org/avatar";
+import { Button } from "@nextui-org/button";
+import { Chip } from "@nextui-org/chip";
+import { Tooltip } from "@nextui-org/tooltip";
 import clsx from "clsx";
+import dayjs from "dayjs";
+import { FC } from "react";
 
 interface TaskProps {
   task: TaskType;

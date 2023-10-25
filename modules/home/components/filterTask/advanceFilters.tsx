@@ -36,7 +36,10 @@ const AdvanceFilters: FC<AdvanceFiltersProps> = ({}) => {
         [curr.key]: curr.value,
       };
     }, {} as any);
-    resetSearchParams(params, [FilterParamKeys.PROJECT_ID]);
+    resetSearchParams(params, [
+      FilterParamKeys.PROJECT_ID,
+      FilterParamKeys.IS_ADVANCE_FILTER,
+    ]);
   };
 
   return (

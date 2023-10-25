@@ -31,7 +31,8 @@ const FilterTask = () => {
     resetSearchParams,
   } = useQueryParams();
   const { user } = useAuthStore();
-  const { isAdvancedFilter, setIsAdvancedFilter } = useFilterTaskContext();
+  const { isAdvancedFilter, setIsAdvancedFilter, setAdvanceFilterSelected } =
+    useFilterTaskContext();
 
   const filters: Array<FilterItemProps> = useMemo(
     () => [
@@ -108,8 +109,13 @@ const FilterTask = () => {
   };
 
   const handleClear = () => {
-    const removeFields = filters.map((filter) => filter.key);
-    removeSearchParams(removeFields);
+    resetSearchParams({}, [
+      FilterParamKeys.PROJECT_ID,
+      FilterParamKeys.IS_ADVANCE_FILTER,
+    ]);
+    if (isAdvancedFilter) {
+      setAdvanceFilterSelected?.([]);
+    }
   };
 
   const searchParamsSize = useMemo(() => {
