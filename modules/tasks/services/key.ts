@@ -6,4 +6,5 @@ export const queryKey = {
   updateTask: () => ["updateTask"],
   updateOrderTasks: () => ["updateOrderTasks"],
   likeTask: () => ["likeTask"],
+  deleteTask: () => ["deleteTask"],
 };

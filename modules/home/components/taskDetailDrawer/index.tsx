@@ -1,43 +1,50 @@
 "use client";
 
+import { GetCommentsParams } from "@/apis/comments/getComments";
+import { queryClient } from "@/app/providers";
 import { LikeFilledIcon, LikeIcon } from "@/components/icons/like";
-import InputWithSearch from "@/components/inputWithSearch";
-import { Button } from "@nextui-org/button";
-import { Avatar, Tooltip } from "@nextui-org/react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { BsArrowBarRight, BsLink } from "react-icons/bs";
-import { FiCheck } from "react-icons/fi";
-import LabelInput from "./labelInput";
-import DetailDueDate from "./detailDueDate";
-import { Textarea } from "@nextui-org/react";
+import InlineInput from "@/components/inlineInput";
+import useDebounceValue from "@/hooks/useDebounceValue";
+import useQueryParams from "@/hooks/useQueryParams";
+import useUpdateFormValues from "@/hooks/useUpdateFormValue";
 import Comment from "@/modules/comments/components/comment";
-import { FC, useEffect, useMemo, useState } from "react";
-import clsx from "clsx";
+import useCreateComment from "@/modules/comments/services/useCreateComment";
+import useGetComments from "@/modules/comments/services/useGetComments";
+import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
 import { Task } from "@/modules/projects/types";
-import { Controller, useForm } from "react-hook-form";
 import {
   UpdateTaskPayload,
   updateTaskSchema,
 } from "@/modules/tasks/schemas/updateTaskSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import InlineInput from "@/components/inlineInput";
-import useUpdateFormValues from "@/hooks/useUpdateFormValue";
-import InputWithSearchUser from "../inputWithSearchUser";
-import useGetProjectMembers from "@/modules/projects/services/useGetProjectMembers";
-import useDebounceValue from "@/hooks/useDebounceValue";
+import { queryKey } from "@/modules/tasks/services/key";
+import useDeleteTask from "@/modules/tasks/services/useDeleteTask";
 import useLikeTask from "@/modules/tasks/services/useLikeTask";
-import { GetCommentsParams } from "@/apis/comments/getComments";
-import useGetComments from "@/modules/comments/services/useGetComments";
-import { PaginationParams } from "@/types";
-import useCreateComment from "@/modules/comments/services/useCreateComment";
-import AddComment from "./addComment";
-import { useAuthStore } from "@/stores/global";
-import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
 import { User } from "@/modules/users/types";
-import { usePathname } from "next/navigation";
-import useQueryParams from "@/hooks/useQueryParams";
+import { useAuthStore } from "@/stores/global";
+import { PaginationParams } from "@/types";
+import { formatTimeToString, timeToEndOfDay } from "@/utils/time";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@nextui-org/button";
+import {
+  Avatar,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Textarea,
+  Tooltip,
+} from "@nextui-org/react";
+import clsx from "clsx";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { AiOutlineDelete } from "react-icons/ai";
+import { BsArrowBarRight, BsLink } from "react-icons/bs";
+import { FiCheck } from "react-icons/fi";
 import { getTaskLink } from "../../utils";
+import InputWithSearchUser from "../inputWithSearchUser";
+import AddComment from "./addComment";
+import DetailDueDate from "./detailDueDate";
 import DetailTags from "./detailTags";
+import LabelInput from "./labelInput";
 
 interface TaskDetailDrawerProps {
   isOpen: boolean;
@@ -56,11 +63,25 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
 }) => {
   const { searchParams } = useQueryParams();
   const { user } = useAuthStore();
+  const deleteButtonRef = useRef<HTMLElement>(null);
 
   const { mutate: likeTask } = useLikeTask({
     onSuccess: () => {
       if (!task) return;
       onLikeClick?.(task.id);
+    },
+  });
+
+  const { mutate: deleteTask } = useDeleteTask({
+    onSuccess: () => {
+      onClose();
+      deleteButtonRef.current?.click();
+      const key = queryKey.getTasks({
+        project_id: task?.project_id || "",
+        section_id: task?.section_id || "",
+      });
+
+      queryClient.invalidateQueries(key);
     },
   });
 
@@ -213,9 +234,38 @@ const TaskDetailDrawer: FC<TaskDetailDrawerProps> = ({
                   <BsLink size={18} />
                 </Button>
               </Tooltip>
-              <Button size="sm" radius="sm" isIconOnly variant="light">
-                <AiOutlineDelete size={18} />
-              </Button>
+              <Popover triggerRef={deleteButtonRef}>
+                <PopoverTrigger>
+                  <Button size="sm" radius="sm" isIconOnly variant="light">
+                    <AiOutlineDelete size={18} />
+                  </Button>
+                </PopoverTrigger>
+
+                <PopoverContent>
+                  <div className="py-1 px-2">
+                    <h3 className="text-md font-medium dark:text-white">
+                      Delete task
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      Are you sure you want to delete this task?
+                    </p>
+
+                    <div className="mt-4 flex justify-end">
+                      <Button
+                        size="sm"
+                        radius="sm"
+                        color="danger"
+                        onClick={() => {
+                          if (!task) return;
+                          deleteTask(task.id);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <Button
                 size="sm"
                 radius="sm"
