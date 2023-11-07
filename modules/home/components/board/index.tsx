@@ -7,6 +7,7 @@ import { useHomeStore } from "@/modules/home/stores";
 import { Section, Task as TaskType } from "@/modules/projects/types";
 import { CreateTaskPayload } from "@/modules/tasks/schemas/createTaskSchema";
 import { queryKey } from "@/modules/tasks/services/key";
+import { queryKey as projectKey } from "@/modules/projects/services/key";
 import useLikeTask from "@/modules/tasks/services/useLikeTask";
 import { Button } from "@nextui-org/button";
 import { Tooltip } from "@nextui-org/tooltip";
@@ -15,6 +16,9 @@ import React, { FC } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import AddTask from "../addTask";
 import Task from "../task";
+import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
+import useDeleteSection from "@/modules/projects/services/useDeleteSection";
+import { Response } from "@/types";
 
 interface BoardProps {
   section: Section;
@@ -32,6 +36,12 @@ const Board: FC<BoardProps> = ({
   const [title, setTitle] = React.useState(section.name);
   const { setSelectedTask } = useHomeStore();
   const { mutate: likeTask } = useLikeTask();
+  const { mutate: deleteSection } = useDeleteSection({
+    onSuccess: () => {
+      const key = projectKey.getSections({ project_id });
+      queryClient.invalidateQueries(key);
+    },
+  });
 
   const handleLikeClick = (taskId: string) => {
     likeTask({
@@ -59,9 +69,38 @@ const Board: FC<BoardProps> = ({
             </Button>
           </Tooltip>
           <Tooltip content="More actions">
-            <Button size="sm" variant="light" isIconOnly>
-              <DotsIcon size={20} />
-            </Button>
+            <Popover>
+              <PopoverTrigger>
+                <Button size="sm" variant="light" isIconOnly>
+                  <DotsIcon size={20} />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent>
+                <div className="py-1 px-2">
+                  <h3 className="text-md font-medium dark:text-white">
+                    Delete section
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Are you sure you want to delete this section?
+                  </p>
+
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      size="sm"
+                      radius="sm"
+                      color="danger"
+                      onClick={() => {
+                        if (!section) return;
+                        deleteSection(section.id);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </Tooltip>
         </div>
       </div>
